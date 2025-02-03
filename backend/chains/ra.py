@@ -32,7 +32,9 @@ legal_vectorstores = FAISS.load_local(legal_path, embeddings, allow_dangerous_de
 legal_retriever = legal_vectorstores.as_retriever(search_type="similarity", search_kwargs={"k": 7})
 
 with open("prompts.yaml", "r", encoding="utf-8") as f:
-    raw_prompt = yaml.safe_load(f)
+    raw = yaml.safe_load(f)
+    
+raw_prompt = raw["ra"]
 
 # Prompt Configuration   
 prompt = ChatPromptTemplate([
