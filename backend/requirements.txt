@@ -1,0 +1,4 @@
+fastapi
+fastapi-admin
+uvicorn
+sqlalchemy
