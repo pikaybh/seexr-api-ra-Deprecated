@@ -54,9 +54,9 @@ GitHub로 협업하는 방법은 프로젝트의 성격과 팀의 협업 방식�
   ```
 
 #### 3.2 브랜치 전략 예시
-- [] **Git Flow**: `main`, `develop`, `feature`, `release`, `hotfix` 브랜치 활용
+- [ ] **Git Flow**: `main`, `develop`, `feature`, `release`, `hotfix` 브랜치 활용
 - [x] **GitHub Flow**: `main` + `feature` 브랜치, PR 기반
-- [] **Trunk-based Development**: `main`에서 직접 개발 후 작은 단위로 병합
+- [ ] **Trunk-based Development**: `main`에서 직접 개발 후 작은 단위로 병합
 
 ### 4. **Pull Request(PR)로 코드 리뷰**
 1. 브랜치에서 작업한 후 GitHub에서 **Pull Request (PR)**를 생성한다.
