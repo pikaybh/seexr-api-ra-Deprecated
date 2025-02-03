@@ -24,12 +24,12 @@ class Admin(AbstractAdmin, table=True):
 
 app = FastAPI()
 
-app.add_middleware(SessionMiddleware, secret_key="3800dd81f8d208a3ef387a58a07c2f6e")
+app.add_middleware(SessionMiddleware, secret_key="something-32char-long-hex")
 
 @app.on_event("startup")
 async def startup():
     await admin_app.init(
-        admin_secret="3800dd81f8d208a3ef387a58a07c2f6e",
+        admin_secret="something-32char-long-hex",
         site=Site(title="Admin Panel"),
         login_provider=UsernamePasswordProvider(),
     )
