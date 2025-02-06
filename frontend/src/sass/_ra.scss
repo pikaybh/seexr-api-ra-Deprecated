@@ -1,0 +1,124 @@
+@use "variables" as *;
+
+.auth-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.ra-section {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    padding-top: 0;
+}
+
+.ra-title {
+    text-align: center;
+    color: $primary-dark;
+}
+
+.ra-form {
+    display: flex;
+    flex-direction: row;
+    gap: 21px;
+    justify-content: center;
+}
+
+.ra-inputs {
+    padding: 0;
+    margin: 0;
+    display: flexbox;
+    flex-direction: column;
+    list-style: none;
+    display: flex;
+    gap: 10px;
+}
+
+.ra-inputs li {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ra-submit {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-width: 1px;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+}
+
+.ra-table {
+    min-height: 50vh;
+}
+
+/* 로딩 스피너 스타일 */
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Table */
+
+
+/* Cell */
+.danger-cell {
+    background-color: $error-light;
+    color: $error-deep;
+}
+
+.warning-cell {
+    background-color: $warning-light;
+    color: $warning-deep;
+}
+
+.safe-cell {
+    background-color: $sub-color-light;
+    color: $sub-color-deep;
+}
+
+/* 완료 메시지 스타일 */
+.success-message {
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: $success;
+    color: $gray25;
+    border-radius: 5px;
+}
+
+.number-cell {
+    background-color: $gray50;
+}
+
+.prevent-plan {
+    text-align: left;
+}
+
+.etcetera {
+    text-align: left;
+}

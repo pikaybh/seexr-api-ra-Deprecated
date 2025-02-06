@@ -1,0 +1,21 @@
+@use "vendor/breakpoints" as *;
+
+@mixin device($size) {
+    @if $size =="mobile" {
+        @media (max-width: map-get($breakpoints, "mobile")) {
+            @content;
+        }
+    }
+
+    @else if $size =="tablet" {
+        @media (min-width: 600px) and (max-width: map-get($breakpoints, "tablet")) {
+            @content;
+        }
+    }
+
+    @else if $size =="pc" {
+        @media (min-width: map-get($breakpoints, "pc")) {
+            @content;
+        }
+    }
+}

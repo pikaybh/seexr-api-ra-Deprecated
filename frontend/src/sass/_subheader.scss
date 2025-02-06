@@ -1,0 +1,8 @@
+@use "variables" as *;
+
+.sub-header {
+    display: flex;
+    justify-content: right;
+    background-color: $gray100;
+    padding: 12px;
+}

@@ -1,1 +1,4 @@
-from .ra import ra_chain
+from .ra import *
+
+######## TEST ########
+from .test import *

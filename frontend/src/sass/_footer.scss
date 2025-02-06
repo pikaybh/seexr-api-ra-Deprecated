@@ -1,0 +1,38 @@
+.footer {
+    background-color: #d1d5d8;
+    padding: 40px;
+    display: flex;
+    justify-content: center
+}
+
+.footer .contents {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1000px
+}
+
+.grid-partners {
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    gap: 8px 40px;
+    align-items: center;
+    justify-content: center
+}
+
+.grid-partners .partner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px
+}
+
+.grid-partners .partner img {
+    max-width: 100%;
+    max-height: 100%
+}
+
+.anchor {
+    position: absolute;
+    margin-top: -72px
+}

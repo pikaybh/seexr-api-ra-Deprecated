@@ -1,0 +1,77 @@
+/** color (or grey scales) */
+$white  : #ffffff  !default;
+$gray25 : #fafafa  !default;
+$gray50 : #f3f3f3  !default;
+$gray100: #f4f4f5  !default;
+$gray150: #ececec  !default;
+$gray200: #eaeaed  !default;
+$gray225: #e3e3e3  !default;
+$gray250: #dddddd  !default;
+$gray300: #d4d4d8  !default;
+$gray325: #d3d3d3  !default;
+$gray350: #c8c8c8  !default;
+$gray400: #a1a1aa  !default;
+$gray425: #9a9a9a  !default;
+$gray450: #8c8c8c  !default;
+$gray475: #7a7a7a  !default;
+$gray500: #71717a  !default;
+$gray550: #626262  !default;
+$gray600: #52525b  !default;
+$gray650: #4a4a4a  !default;
+$gray700: #3f3f46  !default;
+$gray750: #343434  !default;
+$gray800: #27272a  !default;
+$gray850: #222222  !default;
+$gray900: #1b1821  !default;
+$gray950: #1a1a1a  !default;
+$black  : #000000  !default;
+
+/** primary */
+$primary      : #18d5c1 !default;
+$primary-sub  : #71f2cd !default;
+$primary-light: #d0fce7 !default;
+$primary-white: #e7fff4 !default;
+$primary-deep : #0c8e99 !default;
+$primary-dark : #044c66 !default;
+
+/** sub-primary (odd) */
+$sub-primary      : #8956fe !default;
+$sub-primary-light: #f3e9fe !default;
+$sub-primary-white: #f9eaff !default;
+$sub-primary-deep : #693eda !default;
+$sub-primary-dark : #4c2bb6 !default;
+
+/** sub-color (odd) */
+$sub-color      : #34c759 !default;
+$sub-color-light: #d9f7df !default;
+$sub-color-white: #f1fcf3 !default;
+$sub-color-deep : #249c43 !default;
+$sub-color-dark : #1b6e32 !default;
+$text-basic: $black;
+$text-sub-01: $sub-color-dark;
+$text-sub-02: $sub-color-deep;
+$text-sub-03: $sub-color-light;
+$text-sub-04: $sub-color-white;
+
+/** error */
+$error      : #ff473a !default;
+$error-light: #fff3f0 !default;
+$error-deep : #db2a2d !default;
+$error-dark : #b71d2c !default;
+
+/** warning */
+$warning      : #ffd311 !default;
+$warning-light: #fff9cf !default;
+$warning-deep : #dbb10c !default;
+$warning-dark : #b79008 !default;
+
+/** success */
+$success      : #0094ff !default;
+$success-light: #def1ff !default;
+$success-deep : #0072db !default;
+$success-dark : #0055b7 !default;
+
+/** Media break points */
+$mobile : 599px;
+$tablet : 1023px;
+$desktop: 1024px;
