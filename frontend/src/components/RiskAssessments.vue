@@ -114,7 +114,7 @@ export default {
 
                 console.log("🚀 Sending Request:", payload);
 
-                const response = await axios.post("http://localhost:8000/v1/ra/test" /** ra/invoke" */ , payload, {
+                const response = await axios.post("http://localhost:8000/v1/ra/invoke" /** ra/invoke" */ , payload, {
                     headers: {
                         "Content-Type": "application/json",
                         "Accept": "application/json",

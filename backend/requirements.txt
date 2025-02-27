@@ -2,3 +2,7 @@ fastapi
 fastapi-admin
 uvicorn
 sqlalchemy
+langchain
+langchain-core
+langchain-community
+langserve[all]

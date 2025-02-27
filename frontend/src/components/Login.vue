@@ -35,7 +35,7 @@ export default {
 
         const handleLogin = async () => {
             try {
-                const response = await axios.post('http://localhost:8000/register/login', {
+                const response = await axios.post('http://147.46.199.153:8000/register/login', {
                     userid: ID.value,
                     password: PW.value,
                 });
