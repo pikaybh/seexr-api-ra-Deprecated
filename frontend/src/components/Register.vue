@@ -59,8 +59,10 @@ export default {
                 return;
             }
 
+	    const API_BASE_URL = `http://${window.location.hostname}:8000`;
+
             try {
-                const response = await axios.post('http://localhost:8000/register', {
+                const response = await axios.post('${API_BASE_URL}/register', {
                     userid: ID.value,
                     password: password.value,
                     username: username.value,

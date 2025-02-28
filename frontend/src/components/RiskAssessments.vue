@@ -83,7 +83,7 @@
 
 <script>
 import axios from 'axios';
-import { requireAuth } from '@/assets/auth-utils';
+// import { requireAuth } from '@/assets/auth-utils';
 
 export default {
     data() {
@@ -98,10 +98,12 @@ export default {
     },
     methods: {
         async runRA() {
-            requireAuth(this); // 인증 확인
+            // requireAuth(this); // 인증 확인
 
             this.loading = true; // 요청 시작 -> 로딩 상태 true
             this.completedMessage = ""; // 메시지 초기화
+
+	    const API_BASE_URL = `http://${window.location.hostname}:8000`;
 
             try {
                 const payload = {
@@ -114,7 +116,7 @@ export default {
 
                 console.log("🚀 Sending Request:", payload);
 
-                const response = await axios.post("http://localhost:8000/v1/ra/invoke" /** ra/invoke" */ , payload, {
+                const response = await axios.post("${API_BASE_URL}/v1/ra/invoke" /** ra/invoke" */ , payload, {
                     headers: {
                         "Content-Type": "application/json",
                         "Accept": "application/json",

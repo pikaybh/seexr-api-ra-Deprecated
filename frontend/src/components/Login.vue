@@ -32,10 +32,11 @@ export default {
         const auth = useAuthStore();
         const ID = ref('');
         const PW = ref('');
+	const API_BASE_URL = `http://${window.location.hostname}:8000`;
 
         const handleLogin = async () => {
             try {
-                const response = await axios.post('http://147.46.199.153:8000/register/login', {
+                const response = await axios.post('${API_BASE_URL}/register/login', {
                     userid: ID.value,
                     password: PW.value,
                 });

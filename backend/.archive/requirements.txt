@@ -3,9 +3,12 @@ fastapi-admin
 uvicorn
 sqlalchemy
 pyjwt
-faiss-cpu
-langchain-cli
-langchain-openai
+langchain
 langchain-core
 langchain-community
+langchain-huggingface
+langchain-openai
+langchain-text-splitters
+langdetect
 langserve[all]
+langsmith

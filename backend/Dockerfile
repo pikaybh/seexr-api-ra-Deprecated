@@ -14,6 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # 애플리케이션 코드 복사
 COPY . /app/backend
 
+
 # OS 패키지 설치 후 캐시 정리
 RUN apt-get update && apt-get install -y sqlite3 \
     && rm -rf /var/lib/apt/lists/*
@@ -22,5 +23,5 @@ RUN apt-get update && apt-get install -y sqlite3 \
 EXPOSE 8000
 
 # FastAPI 실행 (최적화된 설정)
-CMD ["uvicorn", "main:app", "--reload"]
-# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# CMD ["uvicorn", "main:app", "--reload"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]

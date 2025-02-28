@@ -34,9 +34,10 @@ export default {
             this.messages.push({ text: this.chat, isUser: true });
             const userMessage = this.chat;
             this.chat = "";
+	    const API_BASE_URL = `http://${window.location.hostname}:8000`;
 
             try {
-                const response = await fetch("http://localhost:8000/v1/openai/stream", {
+                const response = await fetch("${API_BASE_URL}/v1/openai/stream", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ input: userMessage })
