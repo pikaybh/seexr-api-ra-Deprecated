@@ -1,4 +1,4 @@
 .env
 db/
 **__pycache__**
-*.ps1
+**.ps1

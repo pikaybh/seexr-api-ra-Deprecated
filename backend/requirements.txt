@@ -2,7 +2,13 @@ fastapi
 fastapi-admin
 uvicorn
 sqlalchemy
+pyjwt
 langchain
 langchain-core
 langchain-community
+langchain-huggingface
+langchain-openai
+langchain-text-splitters
+langdetect
 langserve[all]
+langsmith
