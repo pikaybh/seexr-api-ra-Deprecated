@@ -1,4 +1,4 @@
-fastapi
+fastapi  # [all]
 fastapi-admin
 uvicorn
 sqlalchemy
@@ -9,3 +9,4 @@ langchain-openai
 langchain-core
 langchain-community
 langserve[all]
+# jinja
