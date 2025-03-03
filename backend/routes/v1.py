@@ -5,17 +5,22 @@ from langserve import add_routes
 from langchain_openai import ChatOpenAI
 
 from utils import verify_access_token
-from chains import ra_chain, sample_item
-from structures import KrasRiskAssessmentInput, KrasRiskAssessmentOutput
+from chains import (ra_chain, 
+                    rma_chain,
+                    sample_item)
+from structures import (KrasRiskAssessmentInput, 
+                        KrasRiskMatrixAnalysisInput,
+                        KrasRiskAssessmentOutput)
 
 load_dotenv()
 
 v1_router = APIRouter(prefix="/v1", tags=["v1"])
 
 model = ChatOpenAI(model="gpt-4o", api_key=os.getenv("OPENAI_API_KEY"))
-add_routes(v1_router, model, path="/openai")
 
+add_routes(v1_router, model, path="/openai")
 add_routes(v1_router, ra_chain, path="/ra", input_type=KrasRiskAssessmentInput)
+add_routes(v1_router, rma_chain, path="/rma", input_type=KrasRiskMatrixAnalysisInput)
 
 '''
 @v1_router.post("/ra")
