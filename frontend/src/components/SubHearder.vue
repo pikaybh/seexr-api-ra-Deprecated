@@ -1,5 +1,6 @@
 <template>
     <div class="sub-header">
+        <div class="logo"><a href="/"><strong>SEEXR</strong></a></div>
         <div class="auth-buttons" v-if="!isAuthenticated">
             <button @click="goToLogin">로그인</button>
             <button @click="goToRegister">회원가입</button>

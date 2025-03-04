@@ -82,6 +82,34 @@
     }
 }
 
+/* 탭 스타일 */
+.tabs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    padding-top: 20px;
+}
+.tabs button {
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    background: $primary-light;
+    border-radius: 5px;
+    color: $primary;
+}
+.tabs button.active {
+    background: $primary-dark;
+    color: white;
+}
+
+/* ✅ 탭 애니메이션 효과 */
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.5s;
+}
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+
 /* Table */
 
 
