@@ -1,5 +1,12 @@
 <template>
     <div style="width: 80vw;">
+        <div style="display: flex; margin: 12px; justify-content: right;">
+            <label for="llm"><strong>Models&nbsp;</strong></label>
+            <select name="llms" id="llm" v-model="selectedModel" @change="updateURL">
+                <option value="openai">OpenAI / gpt-4o</option>
+                <option value="ds-r1">Deepseek / r1</option>
+            </select>
+        </div>
         <div class="chat-window" style="min-height: 70vh;">
             <div v-for="(message, index) in messages"   
                 class="chat-message"
@@ -16,28 +23,38 @@
 </template>
 
 <script>
-import { requireAuth } from '@/assets/auth-utils';
-
 export default {
     data() {
         return {
             chat: '',
-            messages: []
+            messages: [],
+            selectedModel: 'openai'
         };
     },
+    created() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('model')) {
+            this.selectedModel = urlParams.get('model');
+        }
+    },
     methods: {
+        updateURL() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('model', this.selectedModel);
+            window.history.pushState({}, '', url);
+        },
         async sendMessage() {
-            requireAuth(this);
-
             if (!this.chat.trim()) return;
 
             this.messages.push({ text: this.chat, isUser: true });
             const userMessage = this.chat;
             this.chat = "";
-	    const API_BASE_URL = `http://${window.location.hostname}:8000`;
+
+            const API_BASE_URL = `http://${window.location.hostname}:8000`;
+            const apiUrl = `${API_BASE_URL}/v1/${this.selectedModel}/stream`;
 
             try {
-                const response = await fetch("${API_BASE_URL}/v1/openai/stream", {
+                const response = await fetch(apiUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ input: userMessage })
