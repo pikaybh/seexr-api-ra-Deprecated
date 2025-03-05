@@ -6,6 +6,7 @@ pyjwt
 faiss-cpu
 langchain-cli
 langchain-openai
+langchain-ollama
 langchain-core
 langchain-community
 langserve[all]
