@@ -12,15 +12,21 @@ from structures import (KrasRiskAssessmentInput,
                         KrasRiskMatrixAnalysisInput,
                         KrasRiskAssessmentOutput)
 
+from langchain_community.chat_models import ChatOllama
+
 load_dotenv()
 
 v1_router = APIRouter(prefix="/v1", tags=["v1"])
 
-model = ChatOpenAI(model="gpt-4o", api_key=os.getenv("OPENAI_API_KEY"))
+inc_openai = ChatOpenAI(model="gpt-4o", api_key=os.getenv("OPENAI_API_KEY"))
 
-add_routes(v1_router, model, path="/openai")
+add_routes(v1_router, inc_openai, path="/openai")
 add_routes(v1_router, ra_chain, path="/ra", input_type=KrasRiskAssessmentInput)
 add_routes(v1_router, rma_chain, path="/rma", input_type=KrasRiskMatrixAnalysisInput)
+
+# ollama
+model_deepseek_r1 = ChatOllama(model="deepseek-r1:32b")
+add_routes(v1_router, model_deepseek_r1, path="/ds-r1")
 
 '''
 @v1_router.post("/ra")

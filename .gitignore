@@ -1,6 +1,6 @@
 .env
 db/
-**__pycache__**
+**__pycache__
 **.ps1
 **.vscode
 
