@@ -30,6 +30,12 @@ class KrasRiskMatrixAnalysisInput(BaseModel):
     work_type: str = Field(description="작업 공종의 이름")
     procedure: str = Field(description="작업 공정의 이름")
 
+class KrasRiskMatrixAnalysisInputText(BaseModel):
+    count: int = Field(description="작업 횟수")
+    work_type: str = Field(description="작업 공종의 이름")
+    procedure: str = Field(description="작업 공정의 이름")
+
+
 class RiskItem(BaseModel):
     번호: int = Field(description="시리얼 숫자")
     공종: str = Field(description="작업 공종의 이름")
@@ -57,4 +63,4 @@ class KrasRiskAssessmentOutput(BaseModel):
     기타: List[str] = Field(description="기타 제언")
 
 
-__all__ = ["KrasRiskAssessmentInput", "KrasRiskMatrixAnalysisInput", "KrasRiskAssessmentOutput", "kras_map"]
+__all__ = ["KrasRiskAssessmentInput", "KrasRiskMatrixAnalysisInput", "KrasRiskMatrixAnalysisInputText", "KrasRiskAssessmentOutput", "kras_map"]

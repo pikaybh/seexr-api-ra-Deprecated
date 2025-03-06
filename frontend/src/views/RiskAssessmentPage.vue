@@ -50,11 +50,16 @@
                         :class="{ active: activeTab === 'ra' }"
                         @click="activeTab = 'ra'"
                     >Basic Risk Assessment</button>
-                    <button 
+                     <button 
                         v-if="showRMATab" 
                         :class="{ active: activeTab === 'rma' }"
                         @click="activeTab = 'rma'"
                     >Risk Matrix Analysis</button>
+                    <button 
+                        v-if="showRMATextTab" 
+                        :class="{ active: activeTab === 'rmaText' }"
+                        @click="activeTab = 'rmaText'"
+                    >Risk Matrix Analysis Text-only</button>
                 </div>
 
                 <!-- ✅ 각각 다른 API 결과를 다른 탭에서 표시 -->
@@ -66,7 +71,7 @@
                             :위험성평가표="basicRiskAssessmentData"
                         />
                     </div>
-                    <div v-show="activeTab === 'rma' && showRMATab">
+                     <div v-show="activeTab === 'rma' && showRMATab">
                         <RiskMatrixAnalysis 
                             :현장사진="현장사진"
                             :공종="공종"
@@ -75,8 +80,13 @@
                             :위험성평가표="riskMatrixData"
                         />
                     </div>
-                    <div v-show="activeTab === 'the-other'">
-                        <TheOtherComponent />
+                    <div v-show="activeTab === 'rmaText' && showRMATextTab">
+                        <RiskMatrixAnalysis 
+                            :공종="공종"
+                            :공정="공정"
+                            :개수="개수"
+                            :위험성평가표="riskMatrixTextOnlyData"
+                        />
                     </div>
                 </section>
             </div>
@@ -92,12 +102,12 @@ import Header from '@/components/Header.vue';
 import SubHearder from '@/components/SubHearder.vue';
 import RiskAssessment from '@/components/RiskAssessment.vue';
 import RiskMatrixAnalysis from '@/components/RiskMatrixAnalysis.vue';
-import TheOtherComponent from '@/components/TheOtherComponent.vue';
+import RiskMatrixAnalysisText from '@/components/RiskMatrixAnalysisText.vue';
 import Footer from '@/components/Footer.vue';
 import axios from 'axios';
 
 export default {
-    components: { Header, SubHearder, RiskAssessment, RiskMatrixAnalysis, TheOtherComponent, Footer },
+    components: { Header, SubHearder, RiskAssessment, RiskMatrixAnalysisText, RiskMatrixAnalysis, Footer },
     setup() {
         const activeTab = ref("ra"); // 기본 탭 설정
         // ✅ 각 평가 결과가 완료될 때 개별적으로 표시할 상태
@@ -109,6 +119,7 @@ export default {
         const 현장사진 = ref(null);
         const basicRiskAssessmentData = ref([]); // ✅ `/v1/ra/invoke` 결과 저장
         const riskMatrixData = ref([]); // ✅ `/v1/rma/invoke` 결과 저장
+	const riskMatrixTextData = ref([]);
         const uploadedImageUrl = ref("");
         const loading = ref(false);
         const completedMessage = ref("");
@@ -116,7 +127,7 @@ export default {
         const tabs = [
             { name: "ra", label: "Basic Risk Assessment" },
             { name: "rma", label: "Risk Matrix Analysis" },
-            { name: "the-other", label: "The Other Section" }
+            { name: "rmaText", label: "Risk Matrix Analysis Text-only" }
         ];
 
         // ✅ 파일 업로드 핸들러 (파일을 그대로 저장)
@@ -139,6 +150,7 @@ export default {
             completedMessage.value = "";
             showRATab.value = false;
             showRMATab.value = false;
+	    showRMATextTab.value = false;
 
             const API_BASE_URL = `http://${window.location.hostname}:8000`;
 
@@ -148,6 +160,7 @@ export default {
             // ✅ 개별 API 요청 처리 (하나가 실패해도 나머지는 정상 실행)
             let raSuccess = false;
             let rmaSuccess = false;
+	    let rmaTextSuccess = false;
 
             try {
                 const raResponse = await axios.post(`${API_BASE_URL}/v1/ra/invoke`, {
@@ -181,6 +194,22 @@ export default {
             } catch (error) {
                 console.error("❌ RMA 요청 실패:", error.response ? error.response.data : error.message);
             }
+            try {
+                const rmaTextResponse = await axios.post(`${API_BASE_URL}/v1/rma-text/invoke`, {
+                    input: {
+                        count: 개수.value,
+                        work_type: 공종.value,
+                        procedure: 공정.value
+                    }
+                });
+
+                console.log("✅ RMA Text-only Response Data:", rmaTextResponse.data);
+                riskMatrixTextData.value = rmaTextResponse.data.output.위험성평가표 || [];
+                rmaTextSuccess = true;
+                showRMATextTab.value = true; // ✅ RMA 평가 완료되면 바로 탭 활성화
+            } catch (error) {
+                console.error("❌ RMA Text-only 요청 실패:", error.response ? error.response.data : error.message);
+            }
             
             // ✅ 평가 완료 후 탭을 한꺼번에 나타나게 함
             setTimeout(() => {
@@ -202,8 +231,8 @@ export default {
         };
 
         return { 
-            activeTab, showRATab, showRMATab, 공종, 공정, 개수, 현장사진, 
-            basicRiskAssessmentData, riskMatrixData, 
+            activeTab, showRATab, showRMATab, showRMATextTab, 공종, 공정, 개수, 현장사진, 
+            basicRiskAssessmentData, riskMatrixData, riskMatrixTextData,
             loading, completedMessage, runRA, handleFileUpload, tabs 
         };
     }

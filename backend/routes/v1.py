@@ -7,9 +7,11 @@ from langchain_openai import ChatOpenAI
 from utils import verify_access_token
 from chains import (ra_chain, 
                     rma_chain,
+                    rma_chain_text,
                     sample_item)
 from structures import (KrasRiskAssessmentInput, 
                         KrasRiskMatrixAnalysisInput,
+                        KrasRiskMatrixAnalysisInputText,
                         KrasRiskAssessmentOutput)
 
 from langchain_ollama import ChatOllama
@@ -30,6 +32,7 @@ add_routes(v1_router, model_deepseek_r1, path="/ds-r1")
 
 add_routes(v1_router, ra_chain, path="/ra", input_type=KrasRiskAssessmentInput)
 add_routes(v1_router, rma_chain, path="/rma", input_type=KrasRiskMatrixAnalysisInput)
+add_routes(v1_router, rma_chain_text, path="/rma-text", input_type=KrasRiskMatrixAnalysisInputText)
 
 
 '''
