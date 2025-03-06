@@ -21,7 +21,7 @@
                     <input v-model="공정" @keyup.enter="runRA" placeholder="작업 공정" />
                 </li>
                 <li>
-                    <input v-model="개수" type="number" id="tentacles" name="tentacles" min="10" max="100" placeholder="5" />
+                    <input v-model="개수" @keyup.enter="runRA" type="number" id="tentacles" name="tentacles" min="10" max="100" placeholder="5" />
                 </li>
             </ul>
             <button class="ra-submit" @click="runRA" :disabled="loading">
@@ -50,7 +50,7 @@
                         :class="{ active: activeTab === 'ra' }"
                         @click="activeTab = 'ra'"
                     >Basic Risk Assessment</button>
-                     <button 
+                    <button 
                         v-if="showRMATab" 
                         :class="{ active: activeTab === 'rma' }"
                         @click="activeTab = 'rma'"
@@ -71,7 +71,7 @@
                             :위험성평가표="basicRiskAssessmentData"
                         />
                     </div>
-                     <div v-show="activeTab === 'rma' && showRMATab">
+                    <div v-show="activeTab === 'rma' && showRMATab">
                         <RiskMatrixAnalysis 
                             :현장사진="현장사진"
                             :공종="공종"
@@ -85,7 +85,7 @@
                             :공종="공종"
                             :공정="공정"
                             :개수="개수"
-                            :위험성평가표="riskMatrixTextOnlyData"
+                            :위험성평가표="riskMatrixTextData"
                         />
                     </div>
                 </section>
@@ -113,13 +113,14 @@ export default {
         // ✅ 각 평가 결과가 완료될 때 개별적으로 표시할 상태
         const showRATab = ref(false);
         const showRMATab = ref(false);
+        const showRMATextTab = ref(false);
         const 공종 = ref("");
         const 공정 = ref("");
         const 개수 = ref(10);
         const 현장사진 = ref(null);
         const basicRiskAssessmentData = ref([]); // ✅ `/v1/ra/invoke` 결과 저장
         const riskMatrixData = ref([]); // ✅ `/v1/rma/invoke` 결과 저장
-	const riskMatrixTextData = ref([]);
+	    const riskMatrixTextData = ref([]);
         const uploadedImageUrl = ref("");
         const loading = ref(false);
         const completedMessage = ref("");
@@ -150,7 +151,7 @@ export default {
             completedMessage.value = "";
             showRATab.value = false;
             showRMATab.value = false;
-	    showRMATextTab.value = false;
+    	    showRMATextTab.value = false;
 
             const API_BASE_URL = `http://${window.location.hostname}:8000`;
 
@@ -160,7 +161,7 @@ export default {
             // ✅ 개별 API 요청 처리 (하나가 실패해도 나머지는 정상 실행)
             let raSuccess = false;
             let rmaSuccess = false;
-	    let rmaTextSuccess = false;
+	        let rmaTextSuccess = false;
 
             try {
                 const raResponse = await axios.post(`${API_BASE_URL}/v1/ra/invoke`, {
@@ -186,7 +187,6 @@ export default {
                         procedure: 공정.value
                     }
                 });
-
                 console.log("✅ RMA Response Data:", rmaResponse.data);
                 riskMatrixData.value = rmaResponse.data.output.위험성평가표 || [];
                 rmaSuccess = true;
