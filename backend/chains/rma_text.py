@@ -42,19 +42,6 @@ def print_return(func):
         return result  # 원래 반환 값 유지
     return wrapper
 
-@print_return
-def encode_image_url(file_path:str) -> str:
-    import base64
-    with open(file_path, "rb") as file:
-        base64_image = base64.b64encode(file.read()).decode('utf-8')
-    file_ext = file_path.split(".")[-1] # jpg
-    return f"data:image/{file_ext};base64, {base64_image}"
-
-@print_return
-def image_preprocessor(image_path: str) -> str:
-    _condition: bool = "http://" in image_path or "https://" in image_path
-    return image_path if _condition else encode_image_url(image_path)
-
 with open("prompts.yaml", "r", encoding="utf-8") as f:
     raw = yaml.safe_load(f)
     
@@ -121,7 +108,6 @@ if __name__ == "__main__":
 
     result = rma_chain.invoke(
         {
-            "image_path": "https://i.ytimg.com/vi/qZAB_yWWbU8/maxresdefault.jpg", 
             "count": "10", 
             "work_type": "철근 작업", 
             "procedure": "자재 운반"
