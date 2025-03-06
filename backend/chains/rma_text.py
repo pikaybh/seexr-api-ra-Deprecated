@@ -91,7 +91,7 @@ rma_chain_text = (
             "work_type": lambda x: x["work_type"],      # 공종
             "procedure": lambda x: x["procedure"],      # 공정
             "reference": dict2str | RunnablePassthrough() | ref_retriever | format_docs,     # 유사 작업
-            "related_law": dict2str | RunnablePassthrough() | ref_retriever | format_docs,   # 근거 법령
+            "related_law": dict2str | RunnablePassthrough() | legal_retriever | format_docs,   # 근거 법령
         }
     ) 
     | printer
