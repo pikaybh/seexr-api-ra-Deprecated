@@ -28,7 +28,7 @@ ref_vectorstores = FAISS.load_local(ref_path, embeddings, allow_dangerous_deseri
 ref_retriever = ref_vectorstores.as_retriever(search_type="similarity", search_kwargs={"k": 7})
 
 # Legal
-legal_path = "assets/faiss/faiss_law"
+legal_path = "assets/faiss/faiss_law_openai"
 legal_vectorstores = FAISS.load_local(legal_path, embeddings, allow_dangerous_deserialization=True)
 legal_retriever = legal_vectorstores.as_retriever(search_type="similarity", search_kwargs={"k": 7})
 
