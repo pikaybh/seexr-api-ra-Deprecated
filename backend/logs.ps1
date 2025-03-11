@@ -1,1 +1,0 @@
-python -m sqlite_web "db/logs.db"

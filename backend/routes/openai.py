@@ -19,13 +19,7 @@ from langchain_ollama import ChatOllama
 
 load_dotenv()
 
-v1_router = APIRouter(prefix="/v1", tags=["v1"])
-
-# OpenAI
-openai_gpt_4o = ChatOpenAI(model="gpt-4o", api_key=os.getenv("OPENAI_API_KEY"))
-
-# Ollama
-model_deepseek_r1 = ChatOllama(model="deepseek-r1:32b")  # , base_url="http://localhost:11434")
+openai_router = APIRouter(prefix="/openai")
 
 # Resources
 add_routes(v1_router, openai_gpt_4o, path="/openai")

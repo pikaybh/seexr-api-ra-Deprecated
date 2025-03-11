@@ -1,5 +1,6 @@
 fastapi  # [all]
 fastapi-admin
+fastapi-versioning
 uvicorn
 sqlalchemy
 pyjwt
@@ -10,4 +11,3 @@ langchain-ollama
 langchain-core
 langchain-community
 langserve[all]
-# jinja
