@@ -106,7 +106,7 @@ __all__ = ["rma_chain_text"]
 if __name__ == "__main__":
     from utils import pretty_print_risk_evaluation
 
-    result = rma_chain.invoke(
+    result = rma_chain_text.invoke(
         {
             "count": "10", 
             "work_type": "철근 작업", 

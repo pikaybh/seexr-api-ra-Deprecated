@@ -1,7 +1,6 @@
 import os
-from typing import List, Dict
+from typing import List, Dict, Union
 from langchain_core.documents import Document
-from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_community.vectorstores import FAISS, Chroma
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -15,6 +14,7 @@ import yaml
 from dotenv import load_dotenv
 
 from structures import KrasRiskAssessmentOutput, kras_map
+from utils import print_return
 
 load_dotenv()
 
@@ -31,68 +31,38 @@ legal_path = "assets/faiss/faiss_law_openai"
 legal_vectorstores = FAISS.load_local(legal_path, embeddings, allow_dangerous_deserialization=True)
 legal_retriever = legal_vectorstores.as_retriever(search_type="similarity", search_kwargs={"k": 7})
 
-import functools
-
-def print_return(func):
-    """함수의 반환 값을 출력하는 데코레이터"""
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)  # 함수 실행
-        print(f"🔹 {func.__name__}: {result}")  # 결과 출력
-        return result  # 원래 반환 값 유지
-    return wrapper
-
 @print_return
-def encode_image_url(file_path:str) -> str:
+def encode_image_url(file_path: str) -> str:
     import base64
     with open(file_path, "rb") as file:
         base64_image = base64.b64encode(file.read()).decode('utf-8')
-    file_ext = file_path.split(".")[-1] # jpg
+    file_ext = file_path.split(".")[-1]
     return f"data:image/{file_ext};base64, {base64_image}"
 
 @print_return
-def image_preprocessor(image_path: str) -> str:
-    _condition: bool = "http://" in image_path or "https://" in image_path
-    return image_path if _condition else encode_image_url(image_path)
+def image_preprocessor(image_paths: Union[str, List[str]]) -> List[str]:
+    if isinstance(image_paths, str):
+        image_paths = [image_paths]
+    
+    processed_images = []
+    for image_path in image_paths:
+        _condition = "http://" in image_path or "https://" in image_path
+        processed_images.append(image_path if _condition else encode_image_url(image_path))
+    
+    return processed_images
 
 with open("prompts.yaml", "r", encoding="utf-8") as f:
     raw = yaml.safe_load(f)
     
 raw_prompt = raw["rma"]
 
-# Prompt Configuration
-# prompt = ChatPromptTemplate.from_messages(
-#     messages=[
-#         SystemMessage(content=raw_prompt["system"]),
-#         HumanMessage(
-#             content=[
-#                 {
-#                     "type": "image_url", 
-#                     "image_url": {
-#                         "url": "{image_path}"
-#                     }
-#                 },{
-#                     "type": "text", 
-#                     "text": raw_prompt["user"].format(
-#                         work_type="{work_type}", 
-#                         procedure="{procedure}", 
-#                         count="{count}",
-#                         reference="{reference}", 
-#                         related_law="{related_law}"
-#                     )
-#                 }
-#             ]
-#         )
-#     ]
-# )
-
 prompt = ChatPromptTemplate([
     ("system", raw_prompt["system"]),
-    ("user", "{image_path}"),
+    ("user", "{image_paths}"),  
     ("user", raw_prompt["user"].format(
-        work_type="{work_type}", 
-        procedure="{procedure}", 
-        count="{count}",
+            work_type="{work_type}", 
+            procedure="{procedure}", 
+            count="{count}",
         reference="{reference}", 
         related_law="{related_law}"
     ))
@@ -127,12 +97,12 @@ structured_output = model.with_structured_output(KrasRiskAssessmentOutput)
 rma_chain = (
     RunnableParallel(
         {
-            "image_path": lambda x: image_preprocessor(x["image_path"]),
+            "image_paths": lambda x: image_preprocessor(x.get("image_paths", [])),
             "count": lambda x: x["count"],
-            "work_type": lambda x: x["work_type"],      # 공종
-            "procedure": lambda x: x["procedure"],      # 공정
-            "reference": dict2str | RunnablePassthrough() | ref_retriever | format_docs,     # 유사 작업
-            "related_law": dict2str | RunnablePassthrough() | legal_retriever | format_docs,   # 근거 법령
+            "work_type": lambda x: x["work_type"],
+            "procedure": lambda x: x["procedure"],
+            "reference": dict2str | RunnablePassthrough() | ref_retriever | format_docs,
+            "related_law": dict2str | RunnablePassthrough() | legal_retriever | format_docs,
         }
     ) 
     | printer
@@ -149,7 +119,10 @@ if __name__ == "__main__":
 
     result = rma_chain.invoke(
         {
-            "image_path": "https://i.ytimg.com/vi/qZAB_yWWbU8/maxresdefault.jpg", 
+            "image_paths": [
+                "https://i.ytimg.com/vi/qZAB_yWWbU8/maxresdefault.jpg", 
+                "https://lh5.googleusercontent.com/proxy/3Bn2dIDlQPZVwEmlBAPO4zafsqgJqm3kmwgBogbS9rMxjJrmHjODRLifzbxHnHkvRK9DLFN0XPnJvT8CiMvRoQ"
+            ], 
             "count": "10", 
             "work_type": "철근 작업", 
             "procedure": "자재 운반"

@@ -25,7 +25,7 @@ class KrasRiskAssessmentInput(BaseModel):
     procedure: str = Field(description="작업 공정의 이름")
 
 class KrasRiskMatrixAnalysisInput(BaseModel):
-    image_path: str = Field(description="현장 사진")
+    image_path: List[str] = Field(description="현장 사진")
     count: int = Field(description="작업 횟수")
     work_type: str = Field(description="작업 공종의 이름")
     procedure: str = Field(description="작업 공정의 이름")

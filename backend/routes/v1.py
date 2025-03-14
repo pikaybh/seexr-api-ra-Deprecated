@@ -1,31 +1,27 @@
-import os
-from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException, Header
-from fastapi_versioning import VersionedFastAPI, version
+from fastapi import APIRouter
+from fastapi_versioning import versioning
 from langserve import add_routes
-from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 
-from utils import verify_access_token
 from chains import (ra_chain, 
                     rma_chain,
+                    RMA,
                     rma_chain_text,
                     sample_item)
 from structures import (KrasRiskAssessmentInput, 
                         KrasRiskMatrixAnalysisInput,
                         KrasRiskMatrixAnalysisInputText,
                         KrasRiskAssessmentOutput)
+from utils import model_call
 
-from langchain_ollama import ChatOllama
-
-load_dotenv()
 
 v1_router = APIRouter(prefix="/v1", tags=["v1"])
 
 # OpenAI
-openai_gpt_4o = ChatOpenAI(model="gpt-4o", api_key=os.getenv("OPENAI_API_KEY"))
+openai_gpt_4o = model_call(address="openai/gpt-4o")
 
 # Ollama
-model_deepseek_r1 = ChatOllama(model="deepseek-r1:32b")  # , base_url="http://localhost:11434")
+model_deepseek_r1 = ChatOllama(model="deepseek-r1:32b")
 
 # Resources
 add_routes(v1_router, openai_gpt_4o, path="/openai")
@@ -33,6 +29,7 @@ add_routes(v1_router, model_deepseek_r1, path="/ds-r1")
 
 add_routes(v1_router, ra_chain, path="/ra", input_type=KrasRiskAssessmentInput)
 add_routes(v1_router, rma_chain, path="/rma", input_type=KrasRiskMatrixAnalysisInput)
+add_routes(v1_router, RMA().chain_call(model="openai/gpt-4o", embeddings="openai/text-embedding-ada-002"), path="/rmav2", input_type=KrasRiskMatrixAnalysisInput)
 add_routes(v1_router, rma_chain_text, path="/rma-text", input_type=KrasRiskMatrixAnalysisInputText)
 
 
