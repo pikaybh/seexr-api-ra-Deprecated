@@ -8,7 +8,7 @@ from langchain_core.embeddings import Embeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_anthropic import ChatAnthropic
 from langchain_ollama import ChatOllama, OllamaEmbeddings
-from langchain_huggingface import ChatHuggingFace, HuggingFaceEmbeddings
+# from langchain_huggingface import ChatHuggingFace, HuggingFaceEmbeddings
 
 
 load_dotenv()
@@ -143,7 +143,7 @@ def model_call(address: str) -> BaseLanguageModel | Embeddings:
     elif inc_name == "anthropic":
         return ChatAnthropic(model=model.name, api_key=os.getenv("ANTHROPIC_API_KEY"))
     else:
-        return HuggingFaceEmbeddings(model=model.name) if model.is_embedding else ChatHuggingFace(model=model.name)
+        return None  # HuggingFaceEmbeddings(model=model.name) if model.is_embedding else ChatHuggingFace(model=model.name)
 
 
 def quantized_model_call(address: str) -> BaseLanguageModel | Embeddings:
