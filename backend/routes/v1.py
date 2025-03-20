@@ -22,6 +22,7 @@ openai_gpt_4o = model_call(address="openai/gpt-4o")
 
 # Ollama
 model_deepseek_r1 = ChatOllama(model="deepseek-r1:32b")
+model_exaone_35 = =""
 
 # Resources
 add_routes(v1_router, openai_gpt_4o, path="/openai")
