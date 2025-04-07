@@ -36,6 +36,7 @@ class KrasRiskMatrixAnalysisInputText(BaseModel):
     procedure: str = Field(description="작업 공정의 이름")
 
 
+
 class RiskItem(BaseModel):
     번호: int = Field(description="시리얼 숫자")
     공종: str = Field(description="작업 공종의 이름")
@@ -54,6 +55,19 @@ class RiskItem(BaseModel):
 
 
 
+class RiskItemV2(BaseModel):
+    번호: int = Field(description="시리얼 숫자")
+    공종: str = Field(description="작업 공종의 이름")
+    공정: str = Field(description="작업 공정의 이름")
+    공정설명: str = Field(description="작업 공정 설명")
+    설비: str = Field(description="작업에 사용되는 설비 이름")
+    물질: str = Field(description="작업 과정에서 취급되는 물질 이름")
+    유해위험요인_분류: str = Field(description="유해 또는 위험 요인의 분류")
+    유해위험요인_원인: str = Field(description="유해 또는 위험 요인의 발생 원인")
+    유해위험요인: str = Field(description="유해 또는 위험 요인의 상세")
+    감소대책: List[str] | str = Field(description="위험 요소 감소를 위해 권장되는 통제 및 제한 조치 목록")
+
+
 
 class KrasRiskAssessmentOutput(BaseModel):
     공종: str = Field(description="사용자가 입력한 공종의 이름")
@@ -63,4 +77,13 @@ class KrasRiskAssessmentOutput(BaseModel):
     기타: List[str] = Field(description="기타 제언")
 
 
-__all__ = ["KrasRiskAssessmentInput", "KrasRiskMatrixAnalysisInput", "KrasRiskMatrixAnalysisInputText", "KrasRiskAssessmentOutput", "kras_map"]
+
+class KrasRiskAssessmentOutputV2(BaseModel):
+    공종: str = Field(description="사용자가 입력한 공종의 이름")
+    공정: str = Field(description="사용자가 입력한 공정의 이름")
+    작업명: str = Field(description="사용자가 입력한 작업명")
+    위험성평가표: List[RiskItemV2] = Field(description="각 위험 요소에 대한 위험성 평가와 통제 조치 목록")
+    기타: List[str] = Field(description="기타 제언")
+
+
+__all__ = ["KrasRiskAssessmentInput", "KrasRiskMatrixAnalysisInput", "KrasRiskMatrixAnalysisInputText", "KrasRiskAssessmentOutput", "KrasRiskAssessmentOutputV2", "kras_map"]

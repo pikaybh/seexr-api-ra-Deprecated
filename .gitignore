@@ -1,4 +1,5 @@
 .env
+setup.bash
 db/
 **__pycache__
 **.ps1

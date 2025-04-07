@@ -5,7 +5,7 @@ from langchain_ollama import ChatOllama
 
 from chains import (ra_chain, 
                     rma_chain,
-                    RMA,
+                    RMAv2,
                     rma_chain_text,
                     sample_item)
 from structures import (KrasRiskAssessmentInput, 
@@ -22,7 +22,7 @@ openai_gpt_4o = model_call(address="openai/gpt-4o")
 
 # Ollama
 model_deepseek_r1 = ChatOllama(model="deepseek-r1:32b")
-model_exaone_35 = =""
+model_exaone_35 =""
 
 # Resources
 add_routes(v1_router, openai_gpt_4o, path="/openai")
@@ -30,7 +30,15 @@ add_routes(v1_router, model_deepseek_r1, path="/ds-r1")
 
 add_routes(v1_router, ra_chain, path="/ra", input_type=KrasRiskAssessmentInput)
 add_routes(v1_router, rma_chain, path="/rma", input_type=KrasRiskMatrixAnalysisInput)
-add_routes(v1_router, RMA().chain_call(model="openai/gpt-4o", embeddings="openai/text-embedding-ada-002"), path="/rmav2", input_type=KrasRiskMatrixAnalysisInput)
+add_routes(
+    v1_router, 
+    RMAv2().chain_call(
+        model="openai/gpt-4o", 
+        embeddings="openai/text-embedding-ada-002"
+    ), 
+    path="/rmav2", 
+    input_type=KrasRiskMatrixAnalysisInput
+)
 add_routes(v1_router, rma_chain_text, path="/rma-text", input_type=KrasRiskMatrixAnalysisInputText)
 
 
@@ -50,7 +58,8 @@ def ra(input: KrasRiskAssessmentInput, session: str = Header(...)) -> KrasRiskAs
 '''
 
 @v1_router.post("/ra/test")
-async def ra_test(): return sample_item
+async def ra_test():
+    return sample_item
 
 
 __all__ = ["v1_router"]

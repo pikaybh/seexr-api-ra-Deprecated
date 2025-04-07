@@ -179,7 +179,7 @@ export default {
             }
 
             try {
-                const rmaResponse = await axios.post(`${API_BASE_URL}/v1/rma/invoke`, {
+                const rmaResponse = await axios.post(`${API_BASE_URL}/v1/rmav2/invoke`, {
                     input: {
                         image_path: 현장사진.value,
                         count: 개수.value,
