@@ -38,7 +38,7 @@ def print_return(func):
 with open("prompts.yaml", "r", encoding="utf-8") as f:
     raw = yaml.safe_load(f)
     
-raw_prompt = raw["cy_rma"]
+raw_prompt = raw["cy_rma_v2"]
 
 prompt = ChatPromptTemplate([
     ("system", raw_prompt["system"]),
