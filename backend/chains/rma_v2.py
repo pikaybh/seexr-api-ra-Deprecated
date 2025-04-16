@@ -1,34 +1,42 @@
 import requests
 import socket
+from typing import List, Optional
 
 from langchain_core.runnables import RunnablePassthrough
 from pydantic import BaseModel
 
-from structures import KrasRiskAssessmentOutput, KrasRiskAssessmentOutputV2, kras_map
+from structures import KrasRiskAssessmentOutputV2, kras_map
 from models import ChainBase
 from utils import get_logger
 
 
 logger = get_logger(__name__)
 
-LOCAL_IP = requests.get("http://ifconfig.me").text.strip()
+# LOCAL_IP = requests.get("http://ifconfig.me").text.strip()
+# 
+# 
+# def get_local_ip():
+#     """
+#     Get the local IP address of the machine.
+#     """
+#     hostname = socket.gethostname()
+#     local_ip = socket.gethostbyname(hostname)
+#     return local_ip
 
 
-def get_local_ip():
-    """
-    Get the local IP address of the machine.
-    """
-    hostname = socket.gethostname()
-    local_ip = socket.gethostbyname(hostname)
-    return local_ip
-
-
-def law_classification(hazard: str, mitigations: list):
+def law_classification(
+        work_type: str,
+        work_process: str,
+        hazard: str, 
+        mitigations: List[str],
+        equipment: Optional[str] = "",
+        material: Optional[str] = ""
+    ):
     """
     Classify the law based on the hazard and mitigation measures.
     """
     mitigations_str = "\n".join([f"{i}. {v}" for i, v in enumerate(mitigations, 1)])
-    url = f"http://{LOCAL_IP}:8001/predictLaw/?hazard_str={hazard}&mitigation_str={mitigations_str}"
+    url = f"http://snucem1.iptime.org:8001/predictLaw?work_type_str={work_type}&work_process_str={work_process}&eqpt_str={equipment}&mat_str={material}&hazard_str={hazard}&mitigation_str={mitigations_str}"
     # print(f"{url = }")
     response = requests.get(url)
     # print(f"{response.text = }")
@@ -37,7 +45,7 @@ def law_classification(hazard: str, mitigations: list):
         return result
     else:
         logger.error(f"Error: {response.status_code}")
-        return "-"
+        return f"API Error ({response.status_code = })"
     
 
 def get_law_classification(feed: KrasRiskAssessmentOutputV2):
@@ -49,10 +57,21 @@ def get_law_classification(feed: KrasRiskAssessmentOutputV2):
         if k.strip().startswith("위험성평가표"):
             for i in range(len(v)):
                 item = v[i]
+                work_type = item["공종"]
+                work_process = item["공정"]
+                equipment = item["설비"]
+                material = item["물질"]
                 hazard = item["유해위험요인"]
                 mitigation = item["감소대책"]
                 if hazard and mitigation:
-                    law_classification_result = law_classification(hazard, mitigation)
+                    law_classification_result = law_classification(
+                        work_type=work_type,
+                        work_process=work_process,
+                        hazard=hazard, 
+                        mitigations=mitigation,
+                        equipment=equipment,
+                        material=material
+                    )
                     if law_classification_result:
                         item["관련근거"] = law_classification_result
                         logger.debug(f"Law classification result for item {i} in {k}: {law_classification_result}")
