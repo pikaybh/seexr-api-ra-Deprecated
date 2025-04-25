@@ -1,8 +1,9 @@
-fastapi  # [all]
+fastapi==0.115.10  # [all]
 fastapi-admin
 fastapi-versioning
 uvicorn
 sqlalchemy
+pydantic
 pyjwt
 faiss-cpu
 langchain-cli
@@ -11,4 +12,4 @@ langchain-anthropic
 langchain-ollama
 langchain-core
 langchain-community
-langserve[all]
+langserve  # [all]

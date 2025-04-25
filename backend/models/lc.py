@@ -13,11 +13,12 @@ from langchain.prompts import BasePromptTemplate, PromptTemplate, ChatPromptTemp
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
 
-from utils import model_call, print_return
+from utils import model_call, print_return  # , quantized_model_call
 
 
 PROMPT_PATH: str = "prompts.yaml"
 FAISS_PATH: str = "assets/faiss"
+OLLAMA_URL = "http://snucem1.iptime.org:11434"
 
 
 
@@ -32,7 +33,14 @@ class ChainBase(BaseModel):
     
     @model.setter
     def model(self, value: str):
-        self._model = model_call(value)
+        """TODOs: `model_call` jmp point"""
+        try:
+            self._model = model_call(value)
+        except:
+            print(f"Model not found: {value}")
+            from langchain_ollama import ChatOllama
+            self._model = ChatOllama(model=value, base_url=OLLAMA_URL)
+            # self._model = quantized_model_call(value)
 
     @property
     def embeddings(self) -> Embeddings:

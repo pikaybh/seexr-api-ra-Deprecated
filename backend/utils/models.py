@@ -146,21 +146,21 @@ def model_call(address: str) -> BaseLanguageModel | Embeddings:
         return None  # HuggingFaceEmbeddings(model=model.name) if model.is_embedding else ChatHuggingFace(model=model.name)
 
 
-def quantized_model_call(address: str) -> BaseLanguageModel | Embeddings:
-    """
-    address `{inc.}/{model name}` 구조.
-    """
-    if not address.count('/') == 1:
-        raise NameError()
-    
-    inc_name, model_name = address.split('/')
-    models = get_elements_by_names(inc_name, INCS)
-    model = get_elements_by_names(model_name, models)
+# def quantized_model_call(address: str) -> BaseLanguageModel | Embeddings:
+#     """
+#     address `{inc.}/{model name}` 구조.
+#     """
+#     if not address.count('/') == 1:
+#         raise NameError()
+#     
+#     inc_name, model_name = address.split('/')
+#     # models = get_elements_by_names(inc_name, INCS)
+#     model = get_elements_by_names(model_name, )
+# 
+#     return OllamaEmbeddings(model.name) if model.is_embedding else ChatOllama(model.name)
 
-    return OllamaEmbeddings(model.name) if model.is_embedding else ChatOllama(model.name)
 
-
-__all__ = ["model_call", "quantized_model_call"]
+__all__ = ["model_call"]  # , "quantized_model_call"]
 
 if __name__ == "__main__":
     llm = model_call("openai/gpt-4o")
