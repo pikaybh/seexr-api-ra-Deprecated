@@ -1,112 +1,71 @@
 # Fullstack Risk Assessment Service
 
+본 프로젝트는 **건설 현장 위험성 평가 시스템**을 위한 Fullstack 웹 애플리케이션입니다. 전체 시스템은 Docker Compose를 통해 다음과 같이 구성되어 있습니다.
 
-## How to use Github
+![Architecture Overview](src/img/workflow.png)
 
-GitHub로 협업하는 방법은 프로젝트의 성격과 팀의 협업 방식에 따라 다르지만, 일반적으로 다음과 같은 단계를 거친다.
+## 📦 시스템 구성
 
-### 1. **GitHub 저장소 생성 및 설정**
-1. [GitHub](https://github.com/)에 접속하여 계정을 만든다.
-2. 새로운 **Repository(저장소)**를 생성한다.
-   - `Public` 또는 `Private` 중 선택 가능
-   - `README.md`, `.gitignore`, 라이선스 설정 가능
-3. 팀원이 접근할 수 있도록 `Settings` → `Manage access`에서 **Collaborator(협업자)**를 추가한다.
+### 1. Frontend
+- **Framework:** [Vite](https://vitejs.dev/), [Vue.js](https://vuejs.org/)
+- **Build Tool:** Node.js
+- **Serving:** NGINX (포트 8080)
+- **역할:** 클라이언트 요청을 비동기로 처리하고, REST API를 통해 백엔드와 통신
 
-### 2. **로컬 환경 설정**
-
-#### 2.1 Git 설치 및 초기 설정
-
-1. Git이 설치되어 있는지 확인하고, 없으면 설치한다.
-   ```bash
-   git --version
-   ```
-
-2. 사용자 정보 설정
-   ```bash
-   git config --global user.name "Your Name"
-   git config --global user.email "your.email@example.com"
-   ```
-
-#### 2.2 저장소 복제 (Clone)
-
-- 팀원이 저장소를 복제하여 로컬에서 작업할 수 있도록 한다.
-   ```bash
-   git clone https://github.com/username/repository.git
-   ```
-- 저장소로 이동
-   ```bash
-   cd repository
-   ```
-
-### 3. **브랜치 전략 설정**
-
-#### 3.1 기본 브랜치 전략
-- `main`(또는 `master`) 브랜치는 항상 안정적인 상태를 유지하도록 한다.
-- 기능별로 새로운 브랜치를 만들어 작업한다.
-  ```bash
-  git checkout -b feature-branch
-  ```
-- 작업 후 변경사항을 커밋하고 푸시한다.
-  ```bash
-  git add .
-  git commit -m "기능 추가"
-  git push origin feature-branch
-  ```
-
-#### 3.2 브랜치 전략 예시
-- [ ] **Git Flow**: `main`, `develop`, `feature`, `release`, `hotfix` 브랜치 활용
-- [x] **GitHub Flow**: `main` + `feature` 브랜치, PR 기반
-- [ ] **Trunk-based Development**: `main`에서 직접 개발 후 작은 단위로 병합
-
-### 4. **Pull Request(PR)로 코드 리뷰**
-1. 브랜치에서 작업한 후 GitHub에서 **Pull Request (PR)**를 생성한다.
-2. 코드 리뷰 후 승인되면 `main` 브랜치에 병합한다.
-3. 병합 후 로컬 저장소를 최신 상태로 유지
-   ```bash
-   git checkout main
-   git pull origin main
-   ```
-
-### 5. **충돌 해결 및 협업 팁**
-
-#### 5.1 최신 코드 유지 (Pull & Rebase)
+**프로세스**
 ```bash
-git checkout feature-branch
-git pull --rebase origin main
+# Vite + Vue.js 기반 프론트엔드 소스 코드 작성
+# ↓
+# Node.js로 빌드 및 패키징
+# ↓
+# NGINX에서 정적 파일 제공 (포트 8080)
 ```
-- `pull --rebase`를 사용하면 불필요한 병합 커밋을 줄일 수 있음
 
-#### 5.2 충돌 해결
-- 충돌이 발생하면 수동으로 수정한 후 다시 커밋
-  ```bash
-  git add .
-  git commit -m "충돌 해결"
-  ```
+### 2. Backend
+- **Framework:** FastAPI (Python)
+- **Serving:** Uvicorn (포트 8000)
+- **API 문서화:** Swagger (OpenAPI)
+- **확장 모듈:** LangChain
 
-#### 5.3 커밋 메시지 규칙
-- 일관된 커밋 메시지를 유지하면 협업이 편리해짐
-  - `feat:` 기능 추가
-  - `fix:` 버그 수정
-  - `docs:` 문서 수정
-  - `refactor:` 코드 개선
-  - `test:` 테스트 코드 추가
+**주요 기능**
+- RESTful API 처리
+- LangChain을 통한 LLM 연동
+- 외부 LLM 서버와 통신 (Ollama, 상용 LLM)
 
-### 6. **GitHub Actions & CI/CD 활용**
-- 자동화된 테스트 및 배포를 설정하여 코드 품질을 유지할 수 있음
-- `.github/workflows/` 디렉터리에 **CI/CD 파이프라인**을 설정하여 코드 푸시 시 자동 빌드 및 테스트 실행
+### 3. LLM 연동
+- **지원 모델:** 
+  - Ollama (포트 11434)
+  - Commercial LLM API (다양한 TCP/UDP 포트)
 
-### 7. **이슈 및 프로젝트 관리**
-- `Issues`를 활용하여 버그 및 작업 목록 관리
-- `Projects`(Kanban Board)로 할당된 작업을 시각적으로 관리
-- `Wiki`를 활용하여 팀 내 기술 문서 정리
+## 🔄 서비스 흐름
 
-### 🚀 **협업 요약**
+1. **클라이언트**가 `http://localhost:8080`으로 접속
+2. **NGINX**가 정적 프론트엔드 파일을 제공
+3. **프론트엔드**가 REST API 요청 (`TCP/8000`)을 **FastAPI** 백엔드로 전달
+4. **FastAPI**는 내부적으로 **LangChain**을 통해 LLM을 호출 (`TCP/11434`, 기타 포트)
+5. 결과를 다시 프론트엔드로 비동기 응답
 
-✅ GitHub 저장소 생성 및 팀원 추가  
-✅ `git clone`으로 로컬 환경 설정  
-✅ 브랜치 전략에 따라 기능별 개발 (`git checkout -b`)  
-✅ PR을 통한 코드 리뷰 및 병합 (`git pull --rebase`)  
-✅ 충돌 해결 후 푸시 (`git commit -m "Resolve conflict"`)  
-✅ CI/CD 및 Issues, Projects 활용하여 프로젝트 관리
+## 🐳 Docker 구성
 
-이 방식으로 협업하면 원활한 GitHub 기반 개발이 가능하다.
+**Docker Compose로 전체 시스템을 오케스트레이션**
+
+- Frontend:
+  - `nginx` + `node:alpine`
+- Backend:
+  - `python:3.12` + `uvicorn`
+- 외부 서비스:
+  - `ollama` 또는 기타 상용 LLM
+  - 기타 Robust LLM (i.g., GPT-4o)
+
+## 🚀 시작 방법
+
+```bash
+# 전체 서비스 빌드 및 실행
+docker-compose up --build
+```
+
+## 📚 API 문서 확인
+
+API 문서는 자동으로 Swagger UI로 생성됩니다.
+
+- 접속: [http://localhost:8000/docs](http://localhost:8000/docs)
