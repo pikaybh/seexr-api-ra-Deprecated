@@ -1,5 +1,7 @@
 # Backend
 
+![backend workflow](../src/img/ra-api-workflow.png)
+
 ## 1. Chains
 
 ### 1.1. Run individual chain
