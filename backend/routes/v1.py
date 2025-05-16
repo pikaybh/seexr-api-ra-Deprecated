@@ -8,10 +8,14 @@ from chains import (ra_chain,
                     RMAv2,
                     RMAv3,
                     rma_chain_text,
-                    sample_item)
+                    sample_item,
+                    dummy_item,
+                    RMAv2CY,
+                    RMAv2BY)
 from structures import (KrasRiskAssessmentInput, 
                         KrasRiskMatrixAnalysisInput,
-                        KrasRiskMatrixAnalysisInputText)
+                        KrasRiskMatrixAnalysisInputText,
+                        RiskAssessmentInput)
 from utils import model_call  # , quantized_model_call
 
 
@@ -53,8 +57,28 @@ add_routes(
     input_type=KrasRiskMatrixAnalysisInput
 )
 add_routes(
+    v1_router,
+    RMAv2CY().chain_call(
+        model="openai/gpt-4o", 
+        embeddings="openai/text-embedding-ada-002"
+    ),
+    path="/openai/gpt-4o/test",
+    input_type=RiskAssessmentInput
+)
+add_routes(
+    v1_router,
+    RMAv2CY().chain_call(
+        model="openai/gpt-4o", 
+        embeddings="openai/text-embedding-ada-002"
+    ),
+    path="/openai/gpt-4o/test_by",
+    input_type=RiskAssessmentInput
+)
+
+# Distributed
+add_routes(
     v1_router, 
-    RMAv2().chain_call(
+    RMAv2BY().chain_call(
         model="exaone3.5:latest", 
         embeddings="openai/text-embedding-ada-002"
     ), 
@@ -82,6 +106,10 @@ def ra(input: KrasRiskAssessmentInput, session: str = Header(...)) -> KrasRiskAs
 @v1_router.post("/ra/test")
 async def ra_test():
     return sample_item
+
+@v1_router.post("/rma/test/")
+async def rma_test():
+    return dummy_item
 
 
 __all__ = ["v1_router"]

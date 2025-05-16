@@ -79,6 +79,7 @@ class ChainBase(BaseModel):
         retriever: VectorStoreRetriever = vectorstores.as_retriever(**retriever_kwargs)
         @print_return
         def retrieve(*args, **kwargs) -> Any:
+            print(f"Retrieving {args = }, {kwargs = }")
             return retriever.invoke(*args, **kwargs)
         return retrieve
     
@@ -127,14 +128,21 @@ class ChainBase(BaseModel):
             return data[key]
         return _select_data
 
-    def mapper(self, map: Dict[str, str], *args) -> str:
-        valid_items = [f"{key}: {value}" for key, value in map.items() if value in args]
+    def mapper(self, mapping: Dict[str, str], **kwargs) -> str:
+        valid_items = [
+            f"- {key}: {kwargs[value]}" 
+            for key, value in mapping.items() 
+            if value in kwargs.keys() 
+            and key != "이미지" 
+            and kwargs[value]
+        ]
         return "\n".join(valid_items)
 
     # Map Dictionary to String
     def get_dict2str(self, mapping: Dict[str, str]) -> Callable:
+        @print_return
         def dict2str(data) -> str:
-            return self.mapper(mapping, *data.keys())
+            return self.mapper(mapping, **data)
         return dict2str
 
     # Formatter Configuration
