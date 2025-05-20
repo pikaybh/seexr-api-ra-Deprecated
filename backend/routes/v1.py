@@ -11,11 +11,12 @@ from chains import (ra_chain,
                     sample_item,
                     dummy_item,
                     RMAv2CY,
-                    RMAv2BY)
+                    RMAv2BY,
+                    CheckListV1)
 from structures import (KrasRiskAssessmentInput, 
                         KrasRiskMatrixAnalysisInput,
                         KrasRiskMatrixAnalysisInputText,
-                        RiskAssessmentInput)
+                        RiskAssessmentInput, RiskAssessmentOutput)
 from utils import model_call  # , quantized_model_call
 
 
@@ -73,6 +74,17 @@ add_routes(
     ),
     path="/openai/gpt-4o/test_by",
     input_type=RiskAssessmentInput
+)
+
+## Checklist
+add_routes(
+    v1_router,
+    CheckListV1().chain_call(
+        model="openai/gpt-4o", 
+        embeddings="openai/text-embedding-ada-002"
+    ),
+    path="/openai/gpt-4o/checklist",
+    input_type=RiskAssessmentOutput
 )
 
 # Distributed
