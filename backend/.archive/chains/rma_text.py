@@ -14,7 +14,7 @@ import yaml
 
 from dotenv import load_dotenv
 
-from structures import KrasRiskAssessmentOutput, kras_map
+from schemas import KrasRiskAssessmentOutput, kras_map
 
 load_dotenv()
 

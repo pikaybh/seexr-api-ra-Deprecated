@@ -1,8 +1,6 @@
-from langchain_core.runnables import RunnablePassthrough
-
-from structures import ChecklistOutput, risk_assessment_map
+from schemas import ChecklistOutput
 from models import ChainBase
-from utils import get_logger, print_return
+from utils import get_logger
 
 logger = get_logger(__name__)
 
@@ -44,6 +42,20 @@ class CheckListV1(ChainBase):
         # Final Chain
         chain = chain_init | self.printer | prompt_template | self.printer | structured_output | self.printer
         return chain
+    
+    def _register_chain(self, **kwargs):
+        incorporation = kwargs.get("incorporation")
+        model = kwargs.get("model")
+        embeddings = kwargs.get("embeddings")
+
+        self.chain = {
+            "chain": self.chain_call(
+                model=f"{incorporation}/{model}",
+                embeddings=f"{incorporation}/{embeddings}"
+            ),
+            "path": f"/{model}/checklist",
+            "input_type": ChecklistOutput,
+        }
 
 __all__ = ["CheckListV1"]
 

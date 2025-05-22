@@ -7,8 +7,8 @@ from pydantic import BaseModel
 from langchain_core.runnables import RunnableParallel
 # from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from langchain_community.vectorstores import FAISS, Chroma
-from langchain_core.vectorstores import VectorStore, VectorStoreRetriever, InMemoryVectorStore
+from langchain_community.vectorstores import FAISS  # , Chroma
+from langchain_core.vectorstores import VectorStore, VectorStoreRetriever  # , InMemoryVectorStore
 from langchain.prompts import BasePromptTemplate, PromptTemplate, ChatPromptTemplate, FewShotPromptTemplate, PipelinePromptTemplate
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
@@ -26,6 +26,15 @@ class ChainBase(BaseModel):
     _model: BaseLanguageModel
     _embeddings: Embeddings
     _prompt: Dict[str, str | list | dict]
+    _chain: Dict[str, Any]
+
+    @property
+    def chain(self) -> Dict[str, Any]:
+        return self._chain
+    
+    @chain.setter
+    def chain(self, value: Dict[str, Any]):
+        self._chain = value
 
     @property
     def model(self) -> BaseLanguageModel:
@@ -152,6 +161,13 @@ class ChainBase(BaseModel):
     @print_return
     def printer(self, data):
         return data
+    
+    def _register_chain(self, *args, **kwargs):
+        raise NotImplementedError("`_register_chain` method not implemented.")
+    
+    def configure(self, **kwargs):
+        self._register_chain(**kwargs)
+        return self.chain
 
 
 

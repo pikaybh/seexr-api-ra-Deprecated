@@ -5,7 +5,7 @@ from typing import List, Optional
 from langchain_core.runnables import RunnablePassthrough
 from pydantic import BaseModel
 
-from structures import KrasRiskAssessmentOutputV2, kras_map
+from schemas import KrasRiskAssessmentOutputV2, kras_map
 from models import ChainBase
 from utils import get_logger
 
@@ -81,55 +81,78 @@ def get_law_classification(feed: KrasRiskAssessmentOutputV2):
     
     return fedd_dict
 
+from langchain_core.runnables import RunnableParallel, RunnableLambda
 
-
-class RMAv2(ChainBase):
+class RMAv3(ChainBase):
     def chain_call(self, model, embeddings):
         self.model = model
         self.embeddings = embeddings
 
-        # Output Configuration
         structured_output = self.model.with_structured_output(KrasRiskAssessmentOutputV2)
-
-        # Retrieval
         reference_retriever = self.faiss_retrieval(file_name="faiss_KRAS")
 
-        # Prompt
         self.prompt = "rma2"
         prompt_template = self.template_call("chat", [
             ("system", self.prompt["system"]),
-            ("user", "{image_paths}"),  
+            ("user", "{image_paths}"),
             ("user", self.prompt["user"].format(
-                    work_type="{work_type}", 
-                    procedure="{procedure}", 
-                    count="{count}",
-                reference="{reference}", 
+                work_type="{work_type}",
+                procedure="{procedure}",
+                count="{count}",
+                reference="{reference}",
             ))
         ])
 
-        # Input Configuration
-        chain_init = self.parallel_init({
-            "image_paths": lambda x: self.image_preprocessor(x.get("image_paths", [])),
-            "count": lambda x: x["count"],
-            "work_type": lambda x: x["work_type"],
-            "procedure": lambda x: x["procedure"],
-            "reference": self.get_dict2str(mapping=kras_map) | RunnablePassthrough() | reference_retriever | self.format_docs,
-        })
+        # ⚠️ 핵심 체인 정의 (하나의 공정에 대해 동작)
+        def single_chain_fn(inputs):
+            proc = inputs["procedure"]
+            chain_init = {
+                "image_paths": lambda x: x.get("image_paths", []),
+                "count": lambda x: x.get("count", "1"),
+                "work_type": lambda x: x.get("work_type", ""),
+                "procedure": lambda _: proc,
+                "reference": (
+                    self.get_dict2str(mapping=kras_map)
+                    | RunnablePassthrough()
+                    | reference_retriever
+                    | self.format_docs
+                )
+            }
+            full_chain = chain_init | prompt_template | structured_output
+            return full_chain.invoke(inputs)
 
-        # Chain Configuration
-        chain = chain_init | prompt_template | structured_output | self.printer | get_law_classification | self.printer
+        # ⚠️ procedure 리스트 받아서 parallel 실행
+        def orchestrator(all_inputs):
+            procedures = all_inputs["procedure"]
+            parallel_inputs = []
+            for proc in procedures:
+                inp = {
+                    "image_paths": all_inputs["image_paths"],
+                    "count": all_inputs["count"],
+                    "work_type": all_inputs["work_type"],
+                    "procedure": proc
+                }
+                parallel_inputs.append(inp)
+            # RunnableLambda를 리스트로 감싸서 RunnableParallel 실행
+            chains = [RunnableLambda(single_chain_fn) for _ in parallel_inputs]
+            parallel_chain = RunnableParallel(*chains)
+            return parallel_chain.invoke(parallel_inputs)
+
+        # ⚠️ 전체 체인 정의
+        chain = RunnableLambda(orchestrator) | get_law_classification | self.printer
 
         return chain
 
 
 
-__all__ = ["RMAv2"]
+
+__all__ = ["RMAv3"]
 
 if __name__ == "__main__":
     from utils import pretty_print_risk_evaluation
 
         
-    result = RMAv2().chain_call(
+    result = RMAv3().chain_call(
         model="openai/gpt-4o", 
         embeddings="openai/text-embedding-ada-002"
     ).invoke(

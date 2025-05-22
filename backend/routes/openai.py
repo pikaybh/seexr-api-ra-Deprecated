@@ -1,36 +1,24 @@
-import os
-from dotenv import load_dotenv
-from fastapi import APIRouter
-from fastapi_versioning import VersionedFastAPI, version
 from langserve import add_routes
-from langchain_openai import ChatOpenAI
 
-from chains import (ra_chain, 
-                    rma_chain,
-                    rma_chain_text,
-                    sample_item)
-from structures import (KrasRiskAssessmentInput, 
-                        KrasRiskMatrixAnalysisInput,
-                        KrasRiskMatrixAnalysisInputText,
-                        KrasRiskAssessmentOutput)
+from chains import configure_chains
 
-from langchain_ollama import ChatOllama
-
-load_dotenv()
-
-openai_router = APIRouter(prefix="/openai")
-
-# Resources
-add_routes(v1_router, openai_gpt_4o, path="/openai")
-add_routes(v1_router, model_deepseek_r1, path="/ds-r1")
-
-add_routes(v1_router, ra_chain, path="/ra", input_type=KrasRiskAssessmentInput)
-add_routes(v1_router, rma_chain, path="/rma", input_type=KrasRiskMatrixAnalysisInput)
-add_routes(v1_router, rma_chain_text, path="/rma-text", input_type=KrasRiskMatrixAnalysisInputText)
+from models import BaseRouter
+from utils import model_call
 
 
-@v1_router.post("/ra/test")
-async def ra_test(): return sample_item
+gpt_4o_chains = configure_chains(incorporation="openai", model="gpt-4o", embeddings="text-embedding-ada-002")
+gpt_4o_mini_chains = configure_chains(incorporation="openai", model="gpt-4o-mini", embeddings="text-embedding-ada-002")
+
+class OpenAIRouterV1(BaseRouter):
+    def __init__(self):
+        super().__init__(prefix="/v1/openai", tags=["OpenAI"])
+
+    def _register_routes(self):
+        add_routes(self.router, model_call(address="openai/gpt-4o"), path="/gpt-4o")
+        
+        ####### Add Chain Routes #######
+        self.add_chain_routes(gpt_4o_chains)
+        self.add_chain_routes(gpt_4o_mini_chains)
 
 
-__all__ = ["v1_router"]
+__all__ = ["OpenAIRouterV1"]

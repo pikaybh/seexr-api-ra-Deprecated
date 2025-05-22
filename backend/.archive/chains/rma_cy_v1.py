@@ -6,7 +6,7 @@ from langchain_core.document_loaders import Blob
 from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_community.document_loaders.parsers.images import BaseImageBlobParser
 
-from structures import FileProcessingRequest, RiskAssessmentOutput, risk_assessment_map
+from schemas import FileProcessingRequest, RiskAssessmentOutput, risk_assessment_map
 from models import ChainBase
 from utils import get_logger
 

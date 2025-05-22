@@ -1,6 +1,6 @@
 from langchain_core.runnables import RunnablePassthrough
 
-from structures import RiskAssessmentOutput, risk_assessment_map
+from schemas import RiskAssessmentOutput, risk_assessment_map
 from utils import get_logger
 
 logger = get_logger(__name__)

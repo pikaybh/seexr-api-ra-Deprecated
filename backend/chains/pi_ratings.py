@@ -1,17 +1,18 @@
 """250515_위험성평가 체인"""
 
-
+from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnablePassthrough
 
-from structures import RiskAssessmentOutput, risk_assessment_map
+from schemas import RiskAssessmentInput, RiskAssessmentOutput, risk_assessment_map
 from models import ChainBase
 from utils import get_logger, print_return
+
 
 logger = get_logger(__name__)
 
 
 
-class RMAv2BY(ChainBase):
+class ProbabilityImpactRatingV1(ChainBase):
     def chain_call(self, model, embeddings):
         self.model = model
         self.embeddings = embeddings
@@ -22,7 +23,6 @@ class RMAv2BY(ChainBase):
         # Retrieval
         reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Openai_v3")
         
-        from langchain_core.messages import HumanMessage
         # Prompt
         self.prompt = "cy_rma_v3"
         def make_template(data):
@@ -52,8 +52,8 @@ class RMAv2BY(ChainBase):
                     )
                 )
             prompt_template = self.template_call("chat", _prompt)
-            print(f"🔹 {_prompt = }")
-            print(f"🔹 {prompt_template = }")
+            logger.debug(f"🔹 {_prompt = }")
+            logger.debug(f"🔹 {prompt_template = }")
             return prompt_template
         
         def find_risks_from_image(images):
@@ -74,8 +74,8 @@ class RMAv2BY(ChainBase):
                     )
                 )
             retriever_prompt = self.template_call("chat", _prompt)
-            print(f"🔹 {__spec__}: {retriever_prompt = }")
-
+            logger.debug(f"🔹 {_prompt = }")
+            logger.debug(f"🔹 {retriever_prompt = }")
             return retriever_prompt
 
         from typing import List
@@ -83,20 +83,45 @@ class RMAv2BY(ChainBase):
         class RetrievalOutput(BaseModel):
             risk_items: List[str] = Field(description="사진 속 위험요인 목록")
         
-        @print_return
-        def merge_risks(args: RetrievalOutput):
-            merged_risks = "\n- ".join(args.risk_items)
-            print(f"🔹 merge_risks: {args = }, {merged_risks = }")
-            return merged_risks
+        def call_merge_risks():
+            @print_return
+            def merge_risks(args: RetrievalOutput):
+                merged_risks = "\n- ".join(args.risk_items)
+                logger.debug(f"🔹 merge_risks: {args = }, {merged_risks = }")
+                return merged_risks
+            return merge_risks
 
-        from langchain_core.runnables import RunnableParallel, RunnableLambda
-
-        def merge_dicts_as_str_shell():
+        def call_merge_dicts_as_str():
             @print_return
             def merge_dicts_as_str(kwargs):
-                print(f"🔹 merge_dicts_as_str: {kwargs = }")
+                logger.debug(f"🔹 merge_dicts_as_str: {kwargs = }")
                 return "\n".join([f"{k}: {v}" for k, v in kwargs.items()])
             return merge_dicts_as_str
+
+        # Identify Risks from Image
+        from_image_chain = (
+            lambda x: find_risks_from_image(x["site_image"]) 
+            | RunnablePassthrough() 
+            | self.printer 
+            | self.model.with_structured_output(RetrievalOutput) 
+            | self.printer 
+            | call_merge_risks()
+        )
+
+        # Reference Retriever
+        reference_chain_head = self.parallel_init({
+            "위험 요인": from_image_chain,
+            "작업 정보": self.get_dict2str(mapping=risk_assessment_map),
+        })
+        reference_chain_tail = (
+            self.printer
+            | RunnablePassthrough()
+            | call_merge_dicts_as_str()
+            | self.printer
+            | reference_retriever
+            | self.format_docs
+        )
+        reference_chain = reference_chain_head | reference_chain_tail
 
         # Input Configuration
         chain_init = self.parallel_init({
@@ -107,30 +132,43 @@ class RMAv2BY(ChainBase):
             "material":   lambda x: x["material"],
             "task_description": lambda x: x["task_description"],
             # "count":      lambda x: x["count"],
-            "reference": self.parallel_init({
-                "사진 속 위험요인 목록": lambda x: find_risks_from_image(x["site_image"]) | RunnablePassthrough() | self.printer | self.model.with_structured_output(RetrievalOutput) | self.printer | merge_risks,
-                "작업 정보": self.get_dict2str(mapping=risk_assessment_map),
-            })
-            | self.printer
-            | RunnablePassthrough()
-            | merge_dicts_as_str_shell()
-            | self.printer
-            # | RunnablePassthrough()
-            | reference_retriever
-            | self.format_docs
+            "reference": reference_chain
         })
 
-        # Final Chain
-        chain = chain_init | self.printer | (lambda x: make_template(x) | RunnablePassthrough()) | self.printer | structured_output | self.printer
-        return chain
+        # Final Prompt Chain
+        prompt_chain = lambda x: make_template(x) | RunnablePassthrough()
 
-__all__ = ["RMAv2BY"]
+        # Final Chain
+        chain = chain_init | self.printer | prompt_chain | self.printer | structured_output | self.printer
+        return chain
+    
+    def _register_chain(self, **kwargs):
+        incorporation = kwargs.get("incorporation")
+        model = kwargs.get("model")
+        embeddings = kwargs.get("embeddings")
+
+        logger.debug(f"🔹 {incorporation = }, {model = }, {embeddings = }")
+
+        untag = lambda x: x.split(":")[0] if ":" in x else x
+        
+        self.chain = {
+            "chain": self.chain_call(
+                model=f"{incorporation}/{model}",
+                embeddings=f"{incorporation}/{embeddings}"
+            ),
+            "path": f"/{untag(model)}/pi-ratings",
+            "input_type": RiskAssessmentInput,
+        }
+        
+        
+
+__all__ = ["ProbabilityImpactRatingV1"]
 
 
 if __name__ == "__main__":
     from utils import pretty_print_risk_evaluation_v2
 
-    result = RMAv2BY().chain_call(
+    result = ProbabilityImpactRatingV1().chain_call(
         model="openai/gpt-4o",
         embeddings="openai/text-embedding-ada-002"
     ).invoke({
@@ -151,6 +189,8 @@ if __name__ == "__main__":
         else:
             logger.info(f"- {k}: {v}")
 
-    pretty_print_risk_evaluation_v2(
-        result.공종, result.공정, result.작업명, result.위험성평가표, result.기타
-    )
+    pretty_print_risk_evaluation_v2(result.공종, 
+                                    result.공정, 
+                                    result.작업명, 
+                                    result.위험성평가표, 
+                                    result.기타)

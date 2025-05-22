@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from fastapi_versioning import versioning
 from langserve import add_routes
 from langchain_ollama import ChatOllama
 
@@ -13,7 +12,7 @@ from chains import (ra_chain,
                     RMAv2CY,
                     RMAv2BY,
                     CheckListV1)
-from structures import (KrasRiskAssessmentInput, 
+from schemas import (KrasRiskAssessmentInput, 
                         KrasRiskMatrixAnalysisInput,
                         KrasRiskMatrixAnalysisInputText,
                         RiskAssessmentInput, RiskAssessmentOutput)
