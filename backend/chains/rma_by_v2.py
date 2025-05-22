@@ -52,13 +52,13 @@ class RMAv2BY(ChainBase):
                     )
                 )
             prompt_template = self.template_call("chat", _prompt)
-            print(f"{_prompt = }")
-            print(f"{prompt_template = }")
+            print(f"🔹 {_prompt = }")
+            print(f"🔹 {prompt_template = }")
             return prompt_template
         
         def find_risks_from_image(images):
             _prompt = [
-                ("system", "사진에서 유해 위험요인을 한국어로 식별하십시오. 사진이 없다면 '사진 없음'이라고 답하십시오."),
+                ("system", "사진에서 유해 위험요인을 **한국어**로 식별하십시오. 사진이 없다면 '사진 없음'이라고 답하십시오."),
             ]
             for _image in images:
                 _prompt.append(
@@ -74,7 +74,7 @@ class RMAv2BY(ChainBase):
                     )
                 )
             retriever_prompt = self.template_call("chat", _prompt)
-            print(f"{__class__}: {retriever_prompt = }")
+            print(f"🔹 {__spec__}: {retriever_prompt = }")
 
             return retriever_prompt
 
@@ -86,15 +86,15 @@ class RMAv2BY(ChainBase):
         @print_return
         def merge_risks(args: RetrievalOutput):
             merged_risks = "\n- ".join(args.risk_items)
-            print(f"merge_risks: {args = }, {merged_risks = }")
-            return merge_risks
+            print(f"🔹 merge_risks: {args = }, {merged_risks = }")
+            return merged_risks
 
         from langchain_core.runnables import RunnableParallel, RunnableLambda
 
         def merge_dicts_as_str_shell():
             @print_return
             def merge_dicts_as_str(kwargs):
-                print(f"merge_dicts_as_str: {kwargs = }")
+                print(f"🔹 merge_dicts_as_str: {kwargs = }")
                 return "\n".join([f"{k}: {v}" for k, v in kwargs.items()])
             return merge_dicts_as_str
 
@@ -111,6 +111,7 @@ class RMAv2BY(ChainBase):
                 "사진 속 위험요인 목록": lambda x: find_risks_from_image(x["site_image"]) | RunnablePassthrough() | self.printer | self.model.with_structured_output(RetrievalOutput) | self.printer | merge_risks,
                 "작업 정보": self.get_dict2str(mapping=risk_assessment_map),
             })
+            | self.printer
             | RunnablePassthrough()
             | merge_dicts_as_str_shell()
             | self.printer
