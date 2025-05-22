@@ -85,7 +85,9 @@ class RMAv2BY(ChainBase):
         
         @print_return
         def merge_risks(args: RetrievalOutput):
-            return "\n- ".join(args.risk_items)
+            merged_risks = "\n- ".join(args.risk_items)
+            print(f"merge_risks: {args = }, {merged_risks = }")
+            return merge_risks
 
         from langchain_core.runnables import RunnableParallel, RunnableLambda
 
