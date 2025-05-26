@@ -24,7 +24,7 @@ class ProbabilityImpactRatingV1(ChainBase):
         reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Openai_v3")
         
         # Prompt
-        self.prompt = "cy_rma_v3"
+        self.prompt = "cy_rma_v4"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),
