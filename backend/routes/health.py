@@ -11,6 +11,7 @@ class HealthRouterV1(BaseRouter):
             endpoint=self.health_check,
             methods=["GET"],
             response_model=BaseResponse,
+            description="Health check endpoint to verify if the service is running."
         )
 
     def health_check(self):

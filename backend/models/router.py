@@ -25,5 +25,6 @@ class BaseRouter:
                 self.router, 
                 chain["chain"], 
                 path=chain["path"], 
-                input_type=chain.get("input_type")
+                input_type=chain.get("input_type", "auto"),
+                output_type=chain.get("output_type", "auto")
             )

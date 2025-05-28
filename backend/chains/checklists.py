@@ -1,4 +1,4 @@
-from schemas import ChecklistOutput
+from schemas import RiskAssessmentOutput, ChecklistOutput
 from models import ChainBase
 from utils import get_logger
 
@@ -58,7 +58,8 @@ class CheckListV1(ChainBase):
                 embeddings=f"{incorporation}/{embeddings}"
             ),
             "path": f"/{untag(model)}/checklist",
-            "input_type": ChecklistOutput,
+            "input_type": RiskAssessmentOutput,
+            "output_type": ChecklistOutput
         }
 
 __all__ = ["CheckListV1"]

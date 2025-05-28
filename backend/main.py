@@ -18,7 +18,7 @@ app.add_middleware(
 
 templates = Jinja2Templates(directory="templates")
 
-@app.get("/", response_class=HTMLResponse, tags=["Home UI"])
+@app.get("/", response_class=HTMLResponse, tags=["Home UI"], description="Home UI for the users who enter the base URL.")
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 

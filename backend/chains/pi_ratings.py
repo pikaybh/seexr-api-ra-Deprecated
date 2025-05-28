@@ -158,6 +158,7 @@ class ProbabilityImpactRatingV1(ChainBase):
             ),
             "path": f"/{untag(model)}/pi-ratings",
             "input_type": RiskAssessmentInput,
+            "output_type": RiskAssessmentOutput
         }
         
         

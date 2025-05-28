@@ -7,6 +7,9 @@ from fastapi import FastAPI
 ##### Health check ######
 from .health import HealthRouterV1
 
+##### Available Models ######
+from .availables import ModelListRouter
+
 ##### Property Models ######
 from .openai import OpenAIRouterV1
 
@@ -22,6 +25,7 @@ __all__ = ["configure_routers"]
 def configure_routers(app: FastAPI) -> FastAPI:
     routers = [
         HealthRouterV1(),
+        ModelListRouter(),
         OpenAIRouterV1(),
         LGAIRouterV1(),
         DeepSeekRouterV1(),
