@@ -1,0 +1,9 @@
+nextinovation:
+  user: https://dev-service.user.seexr.wanso.kr
+  dev: https://dev-service.api.seexr.wanso.kr
+  api: https://dev-service.admin.seexr.wanso.kr
+seexr:
+  self: http://snucem1.iptime.org
+  web: https://seexr.co.kr
+  bhyoo: 147.46.199.153
+  cylee: 147.46.94.106

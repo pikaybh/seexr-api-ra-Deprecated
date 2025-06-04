@@ -4,6 +4,9 @@ Endpoints implementation for Backend.
 
 from fastapi import FastAPI
 
+##### Home UI ######
+from .home import HomeRouter
+
 ##### Health check ######
 from .health import HealthRouterV1
 
@@ -24,6 +27,7 @@ __all__ = ["configure_routers"]
 
 def configure_routers(app: FastAPI) -> FastAPI:
     routers = [
+        HomeRouter(),
         HealthRouterV1(),
         ModelListRouter(),
         OpenAIRouterV1(),

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Literal
 
 from langserve import CustomUserType
 from pydantic import BaseModel, Field
@@ -121,21 +121,24 @@ class RiskItemV3(BaseModel):
     )
     유해위험요인: str = Field(
         description="유해·위험 요인. 해당 공정·작업에서 실제로 잠재하거나 표면화된 유해성·위험성을 구체적으로 기재. 위험성평가(정성/정량) 과정의 중심이 되는 필드.",
-        examples=["붕괴 위험", "낙하 위험", "화학물질 노출", "전기 감전"]
     )
-    사고분류: str = Field(
+    사고분류: Literal[
+        '감전', '기타', '깔림', '끼임', '넘어짐', '떨어짐', '물체에 맞음', '부딪힘', '절단 및 베임', '질병', '질식', '찔림', '화상'
+    ] = Field(
         description="사고 분류. 해당 위험요인으로 인해 실제 또는 잠재적으로 발생 가능한 사고의 유형을 표준화된 분류 체계에 따라 기록함.",
-        examples=["추락", "협착", "감전", "화재", "폭발"]
+        examples=[
+            '감전', '기타', '깔림', '끼임', '넘어짐', '떨어짐', '물체에 맞음', '부딪힘', '절단 및 베임', '질병', '질식', '찔림', '화상'
+        ]
     )
-    위험가능성: str = Field(
+    위험가능성: Literal["낮음(1)", "중간(2)", "높음(3)"] = Field(
         description="위험이 발생하는 빈도. 해당 위험요인이 건설 현장에서 어느 정도 자주 노출·발생하는지에 대한 정성적 또는 정량적 평가. 현장 실태와 과거 사례, 데이터 기반으로 평가할 것.",
         examples=["낮음(1)", "중간(2)", "높음(3)"]
     )
-    위험중대성: str = Field(
+    위험중대성: Literal["낮음(1)", "중간(2)", "높음(3)"] = Field(
         description="위험이 미치는 영향의 심각성. 위험요인이 현실화될 경우 인적·물적·법적 측면에서 초래할 수 있는 결과의 심각도(예: 치명상, 다수 피해, 경상, 경미 손실 등)로, 안전관리에서 우선순위 결정에 핵심적 기준이 됨.",
         examples=["낮음(1)", "중간(2)", "높음(3)"]
     )
-    위험성: str = Field(
+    위험성: Literal["낮음(1)", "낮음(2)", "중간(3)", "중간(4)", "높음(6)", "높음(9)"] = Field(
         description="해당 유해·위험 요인의 위험성. '위험가능성'과 '위험중대성'의 조합 또는 정량적 산식('위험가능성'×'위험중대성')에 따라 평가된 총체적 위험수준. 대응·관리 우선순위 결정에 활용.",
         examples=["낮음(1)", "낮음(2)", "중간(3)", "중간(4)", "높음(6)", "높음(9)"]
     )
@@ -165,4 +168,34 @@ class RiskAssessmentOutput(BaseModel):
         description="기타 제언. 위험성평가표에 포함되지 않는 추가적인 제언이나 주의사항을 기술"
     )
 
-__all__ = ["FileProcessingRequest", "RiskAssessmentInput", "RiskAssessmentOutput", "risk_assessment_map"]
+
+
+# 위험성평가 자동화 실험을 위한 모듈 의 입력 필드
+class RiskAssessmentEvalInput(BaseModel):
+    process_major_category: str = Field(
+        description="작업 공정 대분류. 전체 건설 프로젝트 내 공사 흐름의 최상위 레벨 카테고리로, 유해·위험 요인을 공정별로 그룹화하거나 책임 단위를 분류할 때 기준이 됨.",
+        examples=["토목", "건축", "기계설비", "전기", "조경", "안전관리"]
+    )
+    process_sub_category: str = Field(
+        "", 
+        description="작업 공정 세부분류. 대분류 아래의 세부적 작업 유형으로, 실제 위험요인이 발생하는 구체적 작업 상황을 명확하게 식별하는 데 사용됨.",
+        examples=["기초공사", "골조공사", "마감공사", "설비공사", "전기공사"]
+    )
+    equipment: str = Field(
+        "", 
+        description="설비 및 장비. 작업에 사용되는 설비 및 장비.",
+        examples=["크레인", "굴착기", "타워크레인", "지게차", "콘크리트 믹서"]
+    )
+    material: str = Field(
+        "", 
+        description="화학 및 인화 물질. 작업 과정에서 취급되는 화학 및 인화성 물질 이름",
+        examples=["시멘트", "페인트", "휘발유", "가솔린", "화학약품"]
+    )
+    hazard: str = Field(
+        "", 
+        description="유해위험요인. 위험성 평가를 위해 식별된 유해 또는 위험 요인",
+    )
+    count: int = Field(10, description="(Deprecated) 유해 위험요인 식별 개수", deprecated=True)
+
+__all__ = ["FileProcessingRequest", "RiskAssessmentInput", "RiskAssessmentOutput", "risk_assessment_map",
+           "RiskAssessmentEvalInput"]
