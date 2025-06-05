@@ -1,10 +1,10 @@
-"""250515_위험성평가 체인"""
+"""250603_위험성평가 체인"""
 
 from langchain_core.runnables import RunnablePassthrough
 
-from schemas import RiskAssessmentEvalInput, RiskAssessmentOutput, risk_assessment_map
+from schemas import RiskAssessmentEvalInput, RiskAssessmentEvalOutput, risk_assessment_map
 from models import ChainBase
-from utils import get_logger, print_return
+from utils import get_logger
 
 
 logger = get_logger(__name__)
@@ -17,13 +17,13 @@ class ProbabilityImpactRatingTest(ChainBase):
         self.embeddings = embeddings
 
         # Output Configuration
-        structured_output = self.model.with_structured_output(RiskAssessmentOutput)
+        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutput)
 
         # Retrieval
-        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v1")
+        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v2")
         
         # Prompt
-        self.prompt = "pi_rating_test"
+        self.prompt = "pi_rating_test_v2"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),
@@ -41,24 +41,14 @@ class ProbabilityImpactRatingTest(ChainBase):
             logger.debug(f"🔹 {prompt_template = }")
             return prompt_template
 
-        def call_merge_dicts_as_str():
-            @print_return
-            def merge_dicts_as_str(kwargs):
-                logger.debug(f"🔹 merge_dicts_as_str: {kwargs = }")
-                return "\n".join([f"{k}: {v}" for k, v in kwargs.items()])
-            return merge_dicts_as_str
-
         # Reference Retriever
-        reference_chain_head = self.get_dict2str(mapping=risk_assessment_map)
-        reference_chain_tail = (
-            self.printer
-            | RunnablePassthrough()
-            # | call_merge_dicts_as_str()
+        reference_chain = (
+            RunnablePassthrough()
+            | self.get_dict2str(mapping=risk_assessment_map)
             | self.printer
             | reference_retriever
             | self.format_docs
         )
-        reference_chain = reference_chain_head | reference_chain_tail
 
         # Input Configuration
         chain_init = self.parallel_init({
@@ -67,7 +57,6 @@ class ProbabilityImpactRatingTest(ChainBase):
             "equipment":  lambda x: x["equipment"],
             "material":   lambda x: x["material"],
             "hazard": lambda x: x["hazard"],
-            # "count":      lambda x: x["count"],
             "reference": reference_chain
         })
 
@@ -94,7 +83,7 @@ class ProbabilityImpactRatingTest(ChainBase):
             ),
             "path": f"/{untag(model)}/pi-ratings/eval",
             "input_type": RiskAssessmentEvalInput,
-            "output_type": RiskAssessmentOutput
+            "output_type": RiskAssessmentEvalOutput
         }
         
         

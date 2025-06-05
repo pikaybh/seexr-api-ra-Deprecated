@@ -151,7 +151,6 @@ class RiskItemV3(BaseModel):
         examples=["산업안전보건법 제23조", "KOSHA Guide 2019", "건설기계 안전관리 규정"]
     )
 
-
 # 위험성평가 전체 output Framework
 class RiskAssessmentOutput(BaseModel):
     공종: str = Field(
@@ -167,7 +166,6 @@ class RiskAssessmentOutput(BaseModel):
     기타: List[str] = Field(
         description="기타 제언. 위험성평가표에 포함되지 않는 추가적인 제언이나 주의사항을 기술"
     )
-
 
 
 # 위험성평가 자동화 실험을 위한 모듈 의 입력 필드
@@ -197,5 +195,17 @@ class RiskAssessmentEvalInput(BaseModel):
     )
     count: int = Field(10, description="(Deprecated) 유해 위험요인 식별 개수", deprecated=True)
 
+# 위험성평가 자동화 실험을 위한 모듈 의 출력 필드
+class RiskAssessmentEvalOutput(BaseModel):
+    사고분류: Literal[
+        '감전', '기타', '깔림', '끼임', '넘어짐', '떨어짐', '물체에 맞음', '부딪힘', '절단 및 베임', '질병', '질식', '찔림', '화상'
+    ] = Field(
+        description="사고 분류. 해당 위험요인으로 인해 실제 또는 잠재적으로 발생 가능한 사고의 유형을 표준화된 분류 체계에 따라 기록함.",
+        examples=[
+            '감전', '기타', '깔림', '끼임', '넘어짐', '떨어짐', '물체에 맞음', '부딪힘', '절단 및 베임', '질병', '질식', '찔림', '화상'
+        ]
+    )
+
+
 __all__ = ["FileProcessingRequest", "RiskAssessmentInput", "RiskAssessmentOutput", "risk_assessment_map",
-           "RiskAssessmentEvalInput"]
+           "RiskAssessmentEvalInput", "RiskAssessmentEvalOutput",]
