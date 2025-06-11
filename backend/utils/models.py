@@ -98,6 +98,7 @@ class OpenAIModel(LanguageModel):
 
 
 openai_language_models: List[OpenAIModel] = [
+    OpenAIModel(name="gpt-4.1", pricing=OpenAIPricing(input_per_1M_tokens=2.00, cached_input_per_1M_tokens=0.50, output_per_1M_tokens=8.00)),
     OpenAIModel(name="gpt-o1", pricing=OpenAIPricing(input_per_1M_tokens=15.00, cached_input_per_1M_tokens=7.50, output_per_1M_tokens=60.00)),
     OpenAIModel(name="gpt-o3-mini", pricing=OpenAIPricing(input_per_1M_tokens=1.10, cached_input_per_1M_tokens=0.55, output_per_1M_tokens=4.40)),
     OpenAIModel(name="gpt-o1-mini", pricing=OpenAIPricing(input_per_1M_tokens=1.10, cached_input_per_1M_tokens=0.55, output_per_1M_tokens=4.40)),
