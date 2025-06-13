@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnablePassthrough
 
-from schemas import RiskAssessmentEvalInput, RiskAssessmentEvalOutput, risk_assessment_map
+from schemas import RiskAssessmentEvalInput, RiskAssessmentOutput, risk_assessment_map
 from models import ChainBase
 from utils import get_logger
 
@@ -11,13 +11,13 @@ logger = get_logger(__name__)
 
 
 
-class ProbabilityImpactRatingTest(ChainBase):
+class ProbabilityImpactRatingTestDemocratRAG(ChainBase):
     def chain_call(self, model, embeddings):
         self.model = model
         self.embeddings = embeddings
 
         # Output Configuration
-        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutput)
+        structured_output = self.model.with_structured_output(RiskAssessmentOutput)
 
         # Retrieval
         reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v3")
@@ -81,11 +81,11 @@ class ProbabilityImpactRatingTest(ChainBase):
                 model=f"{incorporation}/{model}",
                 embeddings=f"{incorporation}/{embeddings}"
             ),
-            "path": f"/{untag(model)}/pi-ratings/eval",
+            "path": f"/{untag(model)}/pi-ratings/eval/democrat/rag",
             "input_type": RiskAssessmentEvalInput,
-            "output_type": RiskAssessmentEvalOutput
+            "output_type": RiskAssessmentOutput
         }
         
         
 
-__all__ = ["ProbabilityImpactRatingTest"]
+__all__ = ["ProbabilityImpactRatingTestDemocratRAG"]

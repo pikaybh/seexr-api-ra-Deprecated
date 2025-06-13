@@ -11,7 +11,7 @@ logger = get_logger(__name__)
 
 
 
-class ProbabilityImpactRatingTestWoRAG(ChainBase):
+class ProbabilityImpactRatingTestMonarchWoRAG(ChainBase):
     def chain_call(self, model, embeddings):
         self.model = model
         self.embeddings = embeddings
@@ -67,11 +67,11 @@ class ProbabilityImpactRatingTestWoRAG(ChainBase):
                 model=f"{incorporation}/{model}",
                 embeddings=f"{incorporation}/{embeddings}"
             ),
-            "path": f"/{untag(model)}/pi-ratings/eval-wo-rag",
+            "path": f"/{untag(model)}/pi-ratings/eval/monarch",
             "input_type": RiskAssessmentEvalInput,
             "output_type": RiskAssessmentEvalOutput
         }
         
         
 
-__all__ = ["ProbabilityImpactRatingTestWoRAG"]
+__all__ = ["ProbabilityImpactRatingTestMonarchWoRAG"]
