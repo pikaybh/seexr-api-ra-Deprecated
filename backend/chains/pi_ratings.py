@@ -171,15 +171,17 @@ if __name__ == "__main__":
     result = ProbabilityImpactRatingV1().chain_call(
         model="openai/gpt-4o",
         embeddings="openai/text-embedding-ada-002"
-    ).invoke({
-        "process_major_category": "토공작업",
-        "process_sub_category": "",
-        "equipment": "소형 크레인, 지게차, 굴삭기",
-        "material": "토사",
-        "task_description": "금일 계획은 다음과 같습니다. 토공 작업으로는 리핑암 절취와 상차, 녹지대 성토, 외부 토사 반입 및 법면 절취가 포함되며, 구조물 공사로는 패널 및 블록 설치와 내부 거푸집 설치가 예정되어 있습니다. 부대공은 철거와 천공, 발파 작업이 있습니다.",
-        "site_image": ["https://lh3.googleusercontent.com/proxy/SmpTSrfjKevfYs-EbOwgr6sic6909ehrObyyH15Tpgk8Qgq30iW-ERO8ggkSledzSEQwiLAvGGproVw6GoCgec-tt4MOtzVCsCkTkFPGEWhmjVuJ"],
-        "count": "10"
-    })
+    ).invoke(
+        {
+    "process_major_category": "갱폼 작업",
+    "process_sub_category": "갱폼 해체 및 반출",
+    "equipment": "타워크레인",
+    "material": "자재",
+    "task_description": "콘크리트 타설 및 양생이 완료된 구조물 외벽부의 갱폼(Form System) 해체 및 자재 반출 작업이 계획되어 있다. 해당 작업은 타설된 구조물이 충분한 강도를 확보한 이후에 수행되며, 고정 상태의 갱폼을 분해하고, 타워크레인을 이용해 지정 장소로 안전하게 인양 및 적치하는 절차로 구성된다. 해체 대상 갱폼은 전일 타설 완료된 외벽 구간이며, 해체 시에는 상단 고정 클램프 해제 → 측면 패널 분리 → 프레임 분해 순으로 작업이 진행된다. 인양 장비로는 타워크레인 1대가 사용되며, 작업팀은 작업반장 1인, 해체공 3인, 신호수 1인의 5인 1조로 운영된다. 해체된 갱폼 자재는 현장 내 임시 적치장으로 운반된 후 재조립 또는 외부 반출을 위한 정비작업을 대기하게 되며, 자재의 상태에 따라 분류작업도 병행될 예정이다. 금일 작업은 특히 고층 작업 구간에서 진행되므로, 인양 중 낙하 및 충돌 방지를 위한 자재 결속 상태 확인과 하부 작업구역의 접근 통제가 철저히 관리되어야 한다. 자재 해체 시에는 작업 순서를 준수하며, 구조물 손상 방지를 위한 주의가 요구된다.",
+    "site_image": ["https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAxNzEyMDRfMTY5%2FMDAxNTEyMzQ4MjU1NjM5.VNvxQPjcaguM96uoEyUB4NxDfUe5gQ4jHezEJoWzPg8g.bjU5NODTWlrDt0Xljtqok5_pZe3fUChlNcjcWo06AI8g.JPEG.tinki8%2F%25BD%25BD%25B6%25F3%25C0%25CC%25B5%25E54.JPG&type=sc960_832"],
+    "count": "10"
+  }
+    )
 
     for k, v in dict(result).items():
         if k.strip().startswith("위험성평가표"):
