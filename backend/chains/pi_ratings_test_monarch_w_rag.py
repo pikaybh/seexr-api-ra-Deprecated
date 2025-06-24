@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnablePassthrough
 
-from schemas import RiskAssessmentEvalInput, RiskAssessmentEvalOutput, risk_assessment_map
+from schemas import RiskAssessmentEvalInputV2, RiskAssessmentEvalOutputV2, risk_assessment_map
 from models import ChainBase
 from utils import get_logger
 
@@ -17,13 +17,13 @@ class ProbabilityImpactRatingTestMonarchRAG(ChainBase):
         self.embeddings = embeddings
 
         # Output Configuration
-        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutput)
+        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutputV2)
 
         # Retrieval
-        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v3")
+        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v6")
         
         # Prompt
-        self.prompt = "pi_rating_test_v2"
+        self.prompt = "pi_rating_test_w_reference_v2"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),
@@ -34,6 +34,7 @@ class ProbabilityImpactRatingTestMonarchRAG(ChainBase):
                     material= data["material"],
                     hazard= data["hazard"],
                     reference=data["reference"],
+                    mitigation= data["mitigation"],
                 ))
             ]
             prompt_template = self.template_call("chat", _prompt)
@@ -57,6 +58,7 @@ class ProbabilityImpactRatingTestMonarchRAG(ChainBase):
             "equipment":  lambda x: x["equipment"],
             "material":   lambda x: x["material"],
             "hazard": lambda x: x["hazard"],
+            "mitigation": lambda x: x["mitigation"],
             "reference": reference_chain
         })
 
@@ -82,8 +84,8 @@ class ProbabilityImpactRatingTestMonarchRAG(ChainBase):
                 embeddings=f"{incorporation}/{embeddings}"
             ),
             "path": f"/{untag(model)}/pi-ratings/eval/monarch/rag",
-            "input_type": RiskAssessmentEvalInput,
-            "output_type": RiskAssessmentEvalOutput
+            "input_type": RiskAssessmentEvalInputV2,
+            "output_type": RiskAssessmentEvalOutputV2
         }
         
         

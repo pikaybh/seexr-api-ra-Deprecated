@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnablePassthrough
 
-from schemas import RiskAssessmentEvalInput, RiskAssessmentOutput
+from schemas import RiskAssessmentEvalInputV2, RiskAssessmentOutput
 from models import ChainBase
 from utils import get_logger
 
@@ -20,7 +20,7 @@ class ProbabilityImpactRatingTestDemocratWoRAG(ChainBase):
         structured_output = self.model.with_structured_output(RiskAssessmentOutput)
        
         # Prompt
-        self.prompt = "pi_rating_test_wo_reference"
+        self.prompt = "pi_rating_test_wo_reference_v2"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),
@@ -30,6 +30,7 @@ class ProbabilityImpactRatingTestDemocratWoRAG(ChainBase):
                     equipment= data["equipment"],
                     material= data["material"],
                     hazard= data["hazard"],
+                    mitigation= data["mitigation"],
                 ))
             ]
             prompt_template = self.template_call("chat", _prompt)
@@ -44,6 +45,7 @@ class ProbabilityImpactRatingTestDemocratWoRAG(ChainBase):
             "equipment":  lambda x: x["equipment"],
             "material":   lambda x: x["material"],
             "hazard": lambda x: x["hazard"],
+            "mitigation": lambda x: x["mitigation"],
         })
 
         # Final Prompt Chain
@@ -68,7 +70,7 @@ class ProbabilityImpactRatingTestDemocratWoRAG(ChainBase):
                 embeddings=f"{incorporation}/{embeddings}"
             ),
             "path": f"/{untag(model)}/pi-ratings/eval/democrat",
-            "input_type": RiskAssessmentEvalInput,
+            "input_type": RiskAssessmentEvalInputV2,
             "output_type": RiskAssessmentOutput
         }
         

@@ -21,7 +21,7 @@ class ProbabilityImpactRatingV1(ChainBase):
         structured_output = self.model.with_structured_output(RiskAssessmentOutput)
 
         # Retrieval
-        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v1")
+        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v6")
         
         # Prompt
         self.prompt = "cy_rma_v3"

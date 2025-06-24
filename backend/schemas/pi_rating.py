@@ -123,11 +123,11 @@ class RiskItemV3(BaseModel):
         description="유해·위험 요인. 해당 공정·작업에서 실제로 잠재하거나 표면화된 유해성·위험성을 구체적으로 기재. 위험성평가(정성/정량) 과정의 중심이 되는 필드.",
     )
     사고분류: Literal[
-        '감전', '기타', '깔림', '끼임', '넘어짐', '떨어짐', '물체에 맞음', '부딪힘', '절단 및 베임', '질병', '질식', '찔림', '화상'
+        "감전", "기타","깔림", "끼임", "넘어짐", "떨어짐", "충돌 및 접촉", "절상(절단,찔림,베임)", "질병", "질식", "화상"
     ] = Field(
         description="사고 분류. 해당 위험요인으로 인해 실제 또는 잠재적으로 발생 가능한 사고의 유형을 표준화된 분류 체계에 따라 기록함.",
         examples=[
-            '감전', '기타', '깔림', '끼임', '넘어짐', '떨어짐', '물체에 맞음', '부딪힘', '절단 및 베임', '질병', '질식', '찔림', '화상'
+            "감전", "기타","깔림", "끼임", "넘어짐", "떨어짐", "충돌 및 접촉", "절상(절단,찔림,베임)", "질병", "질식", "화상"
         ]
     )
     위험가능성: Literal["낮음(1)", "중간(2)", "높음(3)"] = Field(
@@ -169,7 +169,7 @@ class RiskAssessmentOutput(BaseModel):
 
 
 # 위험성평가 자동화 실험을 위한 모듈 의 입력 필드
-class RiskAssessmentEvalInput(BaseModel):
+class RiskAssessmentEvalInputV1(BaseModel):
     process_major_category: str = Field(
         description="작업 공정 대분류. 전체 건설 프로젝트 내 공사 흐름의 최상위 레벨 카테고리로, 유해·위험 요인을 공정별로 그룹화하거나 책임 단위를 분류할 때 기준이 됨.",
         examples=["토목", "건축", "기계설비", "전기", "조경", "안전관리"]
@@ -195,8 +195,37 @@ class RiskAssessmentEvalInput(BaseModel):
     )
     count: int = Field(10, description="(Deprecated) 유해 위험요인 식별 개수", deprecated=True)
 
+
+# 위험성평가 자동화 실험을 위한 모듈 의 입력 필드
+class RiskAssessmentEvalInputV2(BaseModel):
+    process_major_category: str = Field(
+        description="작업 공정 대분류. 전체 건설 프로젝트 내 공사 흐름의 최상위 레벨 카테고리로, 유해·위험 요인을 공정별로 그룹화하거나 책임 단위를 분류할 때 기준이 됨.",
+        examples=["토목", "건축", "기계설비", "전기", "조경", "안전관리"]
+    )
+    process_sub_category: str = Field(
+        "", 
+        description="작업 공정 세부분류. 대분류 아래의 세부적 작업 유형으로, 실제 위험요인이 발생하는 구체적 작업 상황을 명확하게 식별하는 데 사용됨.",
+        examples=["기초공사", "골조공사", "마감공사", "설비공사", "전기공사"]
+    )
+    equipment: str = Field(
+        "", 
+        description="설비 및 장비. 작업에 사용되는 설비 및 장비.",
+        examples=["크레인", "굴착기", "타워크레인", "지게차", "콘크리트 믹서"]
+    )
+    material: str = Field(
+        "", 
+        description="화학 및 인화 물질. 작업 과정에서 취급되는 화학 및 인화성 물질 이름",
+        examples=["시멘트", "페인트", "휘발유", "가솔린", "화학약품"]
+    )
+    hazard: str = Field(
+        "", 
+        description="유해위험요인. 위험성 평가를 위해 식별된 유해 또는 위험 요인",
+    )
+    mitigation: str = Field("", description="저감대책. 위험성 저감책책")
+
+
 # 위험성평가 자동화 실험을 위한 모듈 의 출력 필드
-class RiskAssessmentEvalOutput(BaseModel):
+class RiskAssessmentEvalOutputV1(BaseModel):
     사고분류: Literal[
         '감전', '깔림', '끼임', '넘어짐', '떨어짐', '물체에 맞음', '부딪힘', '절단 및 베임', '질병', '질식', '찔림', '화상', '기타'
     ]
@@ -206,7 +235,12 @@ class RiskAssessmentEvalOutput(BaseModel):
     #         '감전', '깔림', '끼임', '넘어짐', '떨어짐', '물체에 맞음', '부딪힘', '절단 및 베임', '질병', '질식', '찔림', '화상'
     #     ]
     # )
+    
+class RiskAssessmentEvalOutputV2(BaseModel):
+    사고분류: Literal[
+        "감전", "기타","깔림", "끼임", "넘어짐", "떨어짐", "충돌 및 접촉", "절상(절단,찔림,베임)", "질병", "질식", "화상"
+    ]
 
 
 __all__ = ["FileProcessingRequest", "RiskAssessmentInput", "RiskAssessmentOutput", "risk_assessment_map",
-           "RiskAssessmentEvalInput", "RiskAssessmentEvalOutput",]
+           "RiskAssessmentEvalInputV2", "RiskAssessmentEvalOutputV2",]

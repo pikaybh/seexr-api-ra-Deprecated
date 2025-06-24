@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnablePassthrough
 
-from schemas import RiskAssessmentEvalInput, RiskAssessmentEvalOutput
+from schemas import RiskAssessmentEvalInputV2, RiskAssessmentEvalOutputV2
 from models import ChainBase
 from utils import get_logger
 
@@ -17,10 +17,10 @@ class ProbabilityImpactRatingTestMonarchWoRAG(ChainBase):
         self.embeddings = embeddings
 
         # Output Configuration
-        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutput)
+        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutputV2)
        
         # Prompt
-        self.prompt = "pi_rating_test_wo_reference"
+        self.prompt = "pi_rating_test_wo_reference_v2"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),
@@ -30,6 +30,7 @@ class ProbabilityImpactRatingTestMonarchWoRAG(ChainBase):
                     equipment= data["equipment"],
                     material= data["material"],
                     hazard= data["hazard"],
+                    mitigation= data["mitigation"],
                 ))
             ]
             prompt_template = self.template_call("chat", _prompt)
@@ -44,6 +45,7 @@ class ProbabilityImpactRatingTestMonarchWoRAG(ChainBase):
             "equipment":  lambda x: x["equipment"],
             "material":   lambda x: x["material"],
             "hazard": lambda x: x["hazard"],
+            "mitigation": lambda x: x["mitigation"],
         })
 
         # Final Prompt Chain
@@ -68,8 +70,8 @@ class ProbabilityImpactRatingTestMonarchWoRAG(ChainBase):
                 embeddings=f"{incorporation}/{embeddings}"
             ),
             "path": f"/{untag(model)}/pi-ratings/eval/monarch",
-            "input_type": RiskAssessmentEvalInput,
-            "output_type": RiskAssessmentEvalOutput
+            "input_type": RiskAssessmentEvalInputV2,
+            "output_type": RiskAssessmentEvalOutputV2
         }
         
         
