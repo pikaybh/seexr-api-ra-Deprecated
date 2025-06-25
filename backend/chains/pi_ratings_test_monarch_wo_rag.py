@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnablePassthrough
 
-from schemas import RiskAssessmentEvalInputV2, RiskAssessmentEvalOutputV2
+from schemas import RiskAssessmentEvalInputV2, RiskAssessmentEvalOutputV3
 from models import ChainBase
 from utils import get_logger
 
@@ -17,10 +17,10 @@ class ProbabilityImpactRatingTestMonarchWoRAG(ChainBase):
         self.embeddings = embeddings
 
         # Output Configuration
-        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutputV2)
+        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutputV3)
        
         # Prompt
-        self.prompt = "pi_rating_test_wo_reference_v2"
+        self.prompt = "pi_rating_test_no_guitar_wo_reference_v1"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),
@@ -71,7 +71,7 @@ class ProbabilityImpactRatingTestMonarchWoRAG(ChainBase):
             ),
             "path": f"/{untag(model)}/pi-ratings/eval/monarch",
             "input_type": RiskAssessmentEvalInputV2,
-            "output_type": RiskAssessmentEvalOutputV2
+            "output_type": RiskAssessmentEvalOutputV3
         }
         
         

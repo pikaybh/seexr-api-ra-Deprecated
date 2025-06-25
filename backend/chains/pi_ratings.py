@@ -1,5 +1,8 @@
 """250515_위험성평가 체인"""
 
+from pydantic import BaseModel, Field
+from typing import List
+
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnablePassthrough
 
@@ -12,6 +15,11 @@ logger = get_logger(__name__)
 
 
 
+class RetrievalOutput(BaseModel):
+    risk_items: List[str] = Field(description="사진 속 위험요인 목록")
+ 
+
+
 class ProbabilityImpactRatingV1(ChainBase):
     def chain_call(self, model, embeddings):
         self.model = model
@@ -21,7 +29,7 @@ class ProbabilityImpactRatingV1(ChainBase):
         structured_output = self.model.with_structured_output(RiskAssessmentOutput)
 
         # Retrieval
-        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v6")
+        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v7")
         
         # Prompt
         self.prompt = "cy_rma_v3"
@@ -40,16 +48,10 @@ class ProbabilityImpactRatingV1(ChainBase):
             ]
             for _image in data["site_image"]:
                 _prompt.append(
-                    HumanMessage(
-                        content=[
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": _image
-                                },
-                            }
-                        ]
-                    )
+                    HumanMessage(content=[{
+                        "type": "image_url",
+                        "image_url": {"url": _image},
+                    }])
                 )
             prompt_template = self.template_call("chat", _prompt)
             logger.debug(f"🔹 {_prompt = }")
@@ -62,27 +64,16 @@ class ProbabilityImpactRatingV1(ChainBase):
             ]
             for _image in images:
                 _prompt.append(
-                    HumanMessage(
-                        content=[
-                            {
-                                "type": "image_url",
-                                "image_url": {
-                                    "url": _image
-                                },
-                            }
-                        ]
-                    )
+                    HumanMessage(content=[{
+                        "type": "image_url",
+                        "image_url": {"url": _image},
+                    }])
                 )
             retriever_prompt = self.template_call("chat", _prompt)
             logger.debug(f"🔹 {_prompt = }")
             logger.debug(f"🔹 {retriever_prompt = }")
             return retriever_prompt
-
-        from typing import List
-        from pydantic import BaseModel, Field
-        class RetrievalOutput(BaseModel):
-            risk_items: List[str] = Field(description="사진 속 위험요인 목록")
-        
+       
         def call_merge_risks():
             @print_return
             def merge_risks(args: RetrievalOutput):

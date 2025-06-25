@@ -20,10 +20,10 @@ class ProbabilityImpactRatingTestDemocratRAG(ChainBase):
         structured_output = self.model.with_structured_output(RiskAssessmentOutput)
 
         # Retrieval
-        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v6")
+        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v7")
         
         # Prompt
-        self.prompt = "pi_rating_test_w_reference_v2"
+        self.prompt = "pi_rating_test_no_guitar_w_reference_v1"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),

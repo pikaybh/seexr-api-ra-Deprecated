@@ -20,7 +20,7 @@ class ProbabilityImpactRatingTestDemocratWoRAG(ChainBase):
         structured_output = self.model.with_structured_output(RiskAssessmentOutput)
        
         # Prompt
-        self.prompt = "pi_rating_test_wo_reference_v2"
+        self.prompt = "pi_rating_test_no_guitar_wo_reference_v1"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),

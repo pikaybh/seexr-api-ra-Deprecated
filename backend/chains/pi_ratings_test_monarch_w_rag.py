@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnablePassthrough
 
-from schemas import RiskAssessmentEvalInputV2, RiskAssessmentEvalOutputV2, risk_assessment_map
+from schemas import RiskAssessmentEvalInputV2, RiskAssessmentEvalOutputV3, risk_assessment_map
 from models import ChainBase
 from utils import get_logger
 
@@ -17,13 +17,13 @@ class ProbabilityImpactRatingTestMonarchRAG(ChainBase):
         self.embeddings = embeddings
 
         # Output Configuration
-        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutputV2)
+        structured_output = self.model.with_structured_output(RiskAssessmentEvalOutputV3)
 
         # Retrieval
-        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v6")
+        reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v7")
         
         # Prompt
-        self.prompt = "pi_rating_test_w_reference_v2"
+        self.prompt = "pi_rating_test_no_guitar_w_reference_v1"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),
@@ -85,7 +85,7 @@ class ProbabilityImpactRatingTestMonarchRAG(ChainBase):
             ),
             "path": f"/{untag(model)}/pi-ratings/eval/monarch/rag",
             "input_type": RiskAssessmentEvalInputV2,
-            "output_type": RiskAssessmentEvalOutputV2
+            "output_type": RiskAssessmentEvalOutputV3
         }
         
         
