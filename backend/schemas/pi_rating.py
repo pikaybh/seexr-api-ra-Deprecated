@@ -153,7 +153,7 @@ class RiskItemV3(BaseModel):
 
 class RiskItemV4(BaseModel):
     """
-    위험성평가 자동화 모듈의 아이템 필드 V3
+    위험성평가 자동화 모듈의 아이템 필드 V4
     """
     번호: int = Field(
         description="연번. 각 위험요인 항목을 식별하기 위한 연속적인 일련번호로, 보고서 상에서 해당 리스크 항목을 참조할 때 사용할 수 있음.",
@@ -208,7 +208,7 @@ class RiskAssessmentOutput(BaseModel):
         description="작업 공정 세부분류. 사용자가 입력한 대분류 아래의 세부적 작업 유형"
     )
     작업명: str = Field(description="(Deprecated) 사용자가 입력한 작업명", deprecated=True)
-    위험성평가표: List[RiskItemV4] = Field(
+    위험성평가표: List[RiskItemV3] = Field(
         description="위험성평가표 아이템. 각 위험 요소에 대한 위험성 평가와 통제 조치 목록"
     )
     기타: List[str] = Field(
@@ -299,6 +299,22 @@ class RiskAssessmentEvalOutputV3(BaseModel):
         ]
     )
 
+# 다중 라벨 사고 분류를 위한 출력 필드
+class MultiLabelAccidentClassificationOutputV1(BaseModel):
+    사고분류: List[
+        Literal[
+            "감전", "기타", "깔림", "끼임", "넘어짐", "떨어짐", "충돌 및 접촉", "절상(절단,찔림,베임)", "질병", "질식", "화상"
+        ]
+    ] 
+    # = Field(
+    #     # description="사고 분류. 해당 위험요인으로 인해 실제 또는 잠재적으로 발생 가능한 사고의 유형을 표준화된 분류 체계에 따라 기록함.",
+    #     examples=[
+    #         ['감전', '깔림', '끼임'], ['넘어짐', '떨어짐', '끼임'], ['물체에 맞음', '떨어짐', '부딪힘'], ['절단 및 베임'], ['질병', '질식', '화상'],
+    #     ]
+    # )
+class MultiLabelAccidentClassificationOutputV2(BaseModel):
+    사고분류: str
+
 
 __all__ = [
     "FileProcessingRequest", 
@@ -309,5 +325,7 @@ __all__ = [
     "risk_assessment_map",
 
     "RiskAssessmentEvalInputV2", 
-    "RiskAssessmentEvalOutputV3"
+    "RiskAssessmentEvalOutputV3",
+
+    "MultiLabelAccidentClassificationOutputV2"
 ]

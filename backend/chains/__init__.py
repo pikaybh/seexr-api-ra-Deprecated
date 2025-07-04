@@ -4,6 +4,7 @@ from .pi_ratings_test_monarch_w_rag import ProbabilityImpactRatingTestMonarchRAG
 from .pi_ratings_test_monarch_wo_rag import ProbabilityImpactRatingTestMonarchWoRAG
 from .pi_ratings_test_democrat_w_rag import ProbabilityImpactRatingTestDemocratRAG
 from .pi_ratings_test_democrat_wo_rag import ProbabilityImpactRatingTestDemocratWoRAG
+from .eval_multi_w_rag import EvalMultiRAG
 
 ######## Checklist ########
 from .checklists import CheckListV1
@@ -19,6 +20,11 @@ def configure_chains(chains: list = [], **kwargs) -> list:
         ProbabilityImpactRatingTestMonarchWoRAG(),
         ProbabilityImpactRatingTestDemocratRAG(),
         ProbabilityImpactRatingTestDemocratWoRAG(),
+        EvalMultiRAG(ds_num=10),
+        EvalMultiRAG(ds_num=55),
+        EvalMultiRAG(ds_num=59),
+        EvalMultiRAG(ds_num=73),
+        EvalMultiRAG(ds_num=98),
         CheckListV1()
     ]
     for _chain in _chains:

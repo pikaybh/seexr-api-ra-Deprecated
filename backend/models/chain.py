@@ -1,5 +1,4 @@
-import base64
-import os
+import base64, os, re
 from typing import Any, Callable, Dict, List, Optional, Union
 
 import yaml
@@ -12,6 +11,9 @@ from langchain_core.vectorstores import VectorStore, VectorStoreRetriever  # , I
 from langchain.prompts import BasePromptTemplate, PromptTemplate, ChatPromptTemplate, FewShotPromptTemplate, PipelinePromptTemplate
 from langchain_core.language_models import BaseLanguageModel
 from langchain_core.embeddings import Embeddings
+from rich.console import Console
+from rich.table import Table
+from rich.box import ROUNDED
 
 from utils import model_call, print_return  # , quantized_model_call
 
@@ -70,9 +72,11 @@ class ChainBase(BaseModel):
             raw = yaml.safe_load(f)
         self._prompt = raw[value]
 
-    @print_return
     def parallel_init(self, *args, **kwargs) -> RunnableParallel:
-        return RunnableParallel(*args, **kwargs)
+        @print_return
+        def _parallel_init(*args, **kwargs) -> RunnableParallel:
+            return RunnableParallel(*args, **kwargs)
+        return _parallel_init(*args, **kwargs)
 
     def faiss_retrieval(self, 
                         file_name: str, 
@@ -139,13 +143,13 @@ class ChainBase(BaseModel):
 
     def mapper(self, mapping: Dict[str, str], **kwargs) -> str:
         valid_items = [
-            f"- {key}: {kwargs[value]}" 
+            f"{key}: {kwargs[value]}" 
             for key, value in mapping.items() 
             if value in kwargs.keys() 
             and key != "이미지" 
             and kwargs[value]
         ]
-        return "\n".join(valid_items)
+        return " ".join(valid_items)
 
     # Map Dictionary to String
     def get_dict2str(self, mapping: Dict[str, str]) -> Callable:
@@ -157,6 +161,33 @@ class ChainBase(BaseModel):
     # Formatter Configuration
     def format_docs(self, docs: List[Document]) -> str:
         return "\n\n".join(doc.page_content for doc in docs)
+    
+    @print_return
+    def format_table(self, docs: List[Document]) -> str:
+        rows = []
+        for doc in docs:
+            # key와 key 사이를 value로 인식하여 정확히 분리 (value가 여러 줄이거나 비어 있어도 안전)
+            pairs = re.findall(r'([^:\n]+):\s*((?:(?![^:\n]+:).)*)', doc.page_content, re.DOTALL)
+            row = {k.strip().lstrip("\ufeff"): v.strip() for k, v in pairs}
+            rows.append(row)
+        # 원하는 열 순서 지정
+        preferred_order = ["공정", "세부공정", "설비", "물질", "유해위험요인", "감소대책", "사고분류"]
+        all_keys = [k for k in preferred_order if any(k in row for row in rows)]
+        # 나머지 키는 알파벳순으로 뒤에 추가
+        extra_keys = sorted({k for row in rows for k in row if k not in preferred_order})
+        all_keys += [k for k in extra_keys if k not in all_keys]
+        table = Table(show_header=True, 
+                    header_style="bold magenta",
+                    box=ROUNDED,
+                    show_lines=True,
+                    width=175)
+        for key in all_keys:
+            table.add_column(key, no_wrap=False, overflow="fold")
+        for row in rows:
+            table.add_row(*(row.get(k, "") for k in all_keys))
+        console = Console(record=True)
+        console.print(table, crop=False, overflow="fold")
+        return console.export_text()
 
     @print_return
     def printer(self, data):

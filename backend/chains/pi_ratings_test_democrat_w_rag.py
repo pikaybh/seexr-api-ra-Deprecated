@@ -2,7 +2,7 @@
 
 from langchain_core.runnables import RunnablePassthrough
 
-from schemas import RiskAssessmentEvalInputV2, RiskAssessmentOutput, risk_assessment_map
+from schemas import RiskAssessmentEvalInputV2, RiskAssessmentOutput, risk_assessment_map  # , MultiLabelAccidentClassificationOutputV2
 from models import ChainBase
 from utils import get_logger
 
@@ -23,7 +23,7 @@ class ProbabilityImpactRatingTestDemocratRAG(ChainBase):
         reference_retriever = self.faiss_retrieval(file_name="faiss_K+S+O_Train_v7")
         
         # Prompt
-        self.prompt = "pi_rating_test_no_guitar_w_reference_v1"
+        self.prompt = "pi_rating_test_w_reference_v4"
         def make_template(data):
             _prompt = [
                 ("system", self.prompt["system"]),
@@ -46,9 +46,8 @@ class ProbabilityImpactRatingTestDemocratRAG(ChainBase):
         reference_chain = (
             RunnablePassthrough()
             | self.get_dict2str(mapping=risk_assessment_map)
-            | self.printer
             | reference_retriever
-            | self.format_docs
+            | self.format_table
         )
 
         # Input Configuration
@@ -66,7 +65,7 @@ class ProbabilityImpactRatingTestDemocratRAG(ChainBase):
         prompt_chain = lambda x: make_template(x) | RunnablePassthrough()
 
         # Final Chain
-        chain = chain_init | self.printer | prompt_chain | self.printer | structured_output | self.printer
+        chain = chain_init | prompt_chain | structured_output | self.printer
         return chain
     
     def _register_chain(self, **kwargs):
