@@ -40,9 +40,12 @@ class RiskAssessmentInput(BaseModel):
         ..., 
         description="현장 사진들. 이미지 URL 혹은 base64로 encoding한 데이터 문자열. 사진이 없을 경우 빈 리스트(Array)를 입력하세요.",
         examples=[
-            "https://example.com/image1.jpg",
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
-            "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD..."
+            [
+                "https://example.com/image1.jpg"
+            ], [
+                "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA...",
+                "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD..."
+            ]
         ]
     )
     process_major_category: str = Field(
