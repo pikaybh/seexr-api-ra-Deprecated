@@ -162,6 +162,12 @@ class ChainBase(BaseModel):
     def format_docs(self, docs: List[Document]) -> str:
         return "\n\n".join(doc.page_content for doc in docs)
     
+    def format_docs(self, docs: List[Document]) -> str:
+        return "\n\n".join(
+            "\n".join(f"{key}: {value}" for key, value in doc.metadata.items())
+            for doc in docs
+            )
+    
     @print_return
     def format_table(self, docs: List[Document]) -> str:
         rows = []
