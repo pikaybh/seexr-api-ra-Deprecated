@@ -84,17 +84,18 @@ class ChainBase(BaseModel):
                             "allow_dangerous_deserialization": True
                         }, 
                         retriever_kwargs: Optional[dict]={
-                            "search_type": "similarity", 
+                            "search_type": "similarity",  # similarity_score_threshold로 했을 때 의미가 없었음 (최소 `{'score_threshold': 0.4}` 이상).
                             "search_kwargs": {"k": 7}
                         }) -> Callable:
         path = os.path.join(FAISS_PATH, file_name)
         vectorstores: VectorStore = FAISS.load_local(path, self.embeddings, **storage_kwargs)
         retriever: VectorStoreRetriever = vectorstores.as_retriever(**retriever_kwargs)
-        @print_return
-        def retrieve(*args, **kwargs) -> Any:
-            print(f"Retrieving {args = }, {kwargs = }")
-            return retriever.invoke(*args, **kwargs)
-        return retrieve
+        # @print_return
+        # def retrieve(*args, **kwargs) -> Any:
+        #     # print(f"Retrieving {args = }, {kwargs = }")
+        #     return retriever.invoke(*args, **kwargs)
+        # return retrieve
+        return lambda *args, **kwargs: retriever.invoke(*args, **kwargs)
     
     def template_call(self, type: str = "chat", *args_template, **kwargs_template) -> BasePromptTemplate:
         if type == "prompt":

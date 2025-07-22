@@ -16,15 +16,15 @@ __all__ = ["configure_chains"]
 def configure_chains(chains: list = [], **kwargs) -> list:
     _chains = [
         ProbabilityImpactRatingV1(),
-        ProbabilityImpactRatingTestMonarchRAG(),
-        ProbabilityImpactRatingTestMonarchWoRAG(),
-        ProbabilityImpactRatingTestDemocratRAG(),
-        ProbabilityImpactRatingTestDemocratWoRAG(),
-        EvalMultiRAG(ds_num=10),
-        EvalMultiRAG(ds_num=55),
-        EvalMultiRAG(ds_num=59),
-        EvalMultiRAG(ds_num=73),
-        EvalMultiRAG(ds_num=98),
+        # ProbabilityImpactRatingTestMonarchRAG(),
+        # ProbabilityImpactRatingTestMonarchWoRAG(),
+        # ProbabilityImpactRatingTestDemocratRAG(),
+        # ProbabilityImpactRatingTestDemocratWoRAG(),
+        # EvalMultiRAG(ds_num=10),
+        # EvalMultiRAG(ds_num=55),
+        # EvalMultiRAG(ds_num=59),
+        # EvalMultiRAG(ds_num=73),
+        # EvalMultiRAG(ds_num=98),
         CheckListV1()
     ]
     for _chain in _chains:

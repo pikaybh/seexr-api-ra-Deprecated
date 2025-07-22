@@ -130,7 +130,7 @@ class ProbabilityImpactRatingV1(ChainBase):
         prompt_chain = lambda x: make_template(x) | RunnablePassthrough()
 
         # Final Chain
-        chain = chain_init | self.printer | prompt_chain | self.printer | structured_output | self.printer
+        chain = chain_init | prompt_chain | structured_output
         return chain
     
     def _register_chain(self, **kwargs):
