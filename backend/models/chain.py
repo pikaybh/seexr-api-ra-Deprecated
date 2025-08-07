@@ -50,7 +50,10 @@ class ChainBase(BaseModel):
         except:
             print(f"Model not found: {value}")
             from langchain_ollama import ChatOllama
-            self._model = ChatOllama(model=value, base_url=OLLAMA_URL)
+            if "gpt-oss" in value:
+                self._model = ChatOllama(model=value, base_url="ollama.seexr.co.kr")
+            else:
+                self._model = ChatOllama(model=value, base_url=OLLAMA_URL)
             # self._model = quantized_model_call(value)
 
     @property

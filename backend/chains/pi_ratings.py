@@ -5,6 +5,7 @@ from typing import List
 
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnablePassthrough
+from langchain_openai import ChatOpenAI
 
 from schemas import RiskAssessmentInput, RiskAssessmentOutput, risk_assessment_map
 from models import ChainBase
@@ -24,6 +25,8 @@ class ProbabilityImpactRatingV1(ChainBase):
     def chain_call(self, model, embeddings):
         self.model = model
         self.embeddings = embeddings
+
+        image_model = self.model if "gpt-" in model else ChatOpenAI(model="gpt-4.1")
 
         # Output Configuration
         structured_output = self.model.with_structured_output(RiskAssessmentOutput)
@@ -94,7 +97,7 @@ class ProbabilityImpactRatingV1(ChainBase):
             lambda x: find_risks_from_image(x["site_image"]) 
             | RunnablePassthrough() 
             | self.printer 
-            | self.model.with_structured_output(RetrievalOutput) 
+            | image_model.with_structured_output(RetrievalOutput) 
             | self.printer 
             | call_merge_risks()
         )
@@ -137,6 +140,7 @@ class ProbabilityImpactRatingV1(ChainBase):
         incorporation = kwargs.get("incorporation")
         model = kwargs.get("model")
         embeddings = kwargs.get("embeddings")
+        isollama = kwargs.get("isollama", False)
 
         logger.debug(f"🔹 {incorporation = }, {model = }, {embeddings = }")
 
@@ -144,7 +148,7 @@ class ProbabilityImpactRatingV1(ChainBase):
         
         self.chain = {
             "chain": self.chain_call(
-                model=f"{incorporation}/{model}",
+                model=model if isollama else f"{incorporation}/{model}",
                 embeddings=f"{incorporation}/{embeddings}"
             ),
             "path": f"/{untag(model)}/pi-ratings",
