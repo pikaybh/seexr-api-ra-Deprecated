@@ -15,7 +15,7 @@ jobs:
       IMAGE: ghcr.io/${{ github.repository_owner }}/seexr-api-ra   # 서비스별로 수정
       TAG_SHA: sha-${{ github.sha }}
       INFRA_REPO: pikaybh/seexr-infra                              # 본인 것으로 수정
-      OVERLAY_PATH: ${{ github.ref_name == 'main' && 'apps/api-ra/overlays/prod' || 'apps/api-ra/overlays/dev' }}
+      OVERLAY_PATH: ${{ github.ref_name == 'main' && 'apps/seexr-api-ra/overlays/prod' || 'apps/seexr-api-ra/overlays/dev' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -27,12 +27,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: docker/build-push-action@v6
+      - name: Build & Push image
+        uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./backend          # ← 실제 소스 폴더
+          file: ./backend/Dockerfile  # ← Dockerfile 경로
           push: true
           tags: |
-            ${{ env.IMAGE }}:${{ env.TAG_SHA }}
+            ghcr.io/${{ github.repository_owner }}/seexr-api-ra:sha-${{ github.sha }}
 
       - name: Checkout infra repo
         uses: actions/checkout@v4
