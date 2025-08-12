@@ -43,18 +43,19 @@ jobs:
           token: ${{ secrets.INFRA_REPO_TOKEN }}   # repo 권한 PAT, 레포 시크릿으로 저장
           path: infra
 
-      - name: Bump kustomize image tag
+      - name: Install kustomize
+        run: |
+          KVER=v5.4.2
+          curl -sSL "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KVER}/kustomize_${KVER}_linux_amd64.tar.gz" -o kustomize.tgz
+          tar xzf kustomize.tgz
+          sudo mv kustomize /usr/local/bin/
+          kustomize version
+
+      - name: Bump image tag with kustomize
         working-directory: infra/apps/seexr-api-ra/overlays/prod
         run: |
-          # .images가 없으면 생성하고, 있으면 대상 name의 newTag만 바꿉니다.
-          yq -i '
-            .images = (.images // []) |
-            if ((.images | map(select(.name == ${{ env.IMAGE }})) | length) > 0) then
-              (.images[] | select(.name == ${{ env.IMAGE }})).newTag = ${{ env.TAG_SHA }}
-            else
-              .images += [{"name": ${{ env.IMAGE }}, "newTag": ${{ env.TAG_SHA }}}]
-            end
-          ' kustomization.yaml
+          kustomize edit set image ${{ env.IMAGE }}=${{ env.IMAGE }}":${{ env.TAG_SHA }}"
+          echo "----- after bump"; cat kustomization.yaml
 
       - name: Create PR to infra
         uses: peter-evans/create-pull-request@v6
