@@ -44,14 +44,17 @@ jobs:
           path: infra
 
       - name: Bump kustomize image tag
+        working-directory: infra/apps/seexr-api-ra/overlays/prod
         run: |
-          sudo apt-get update && sudo apt-get install -y yq
-          cd infra/${{ env.OVERLAY_PATH }}
+          # .images가 없으면 생성하고, 있으면 대상 name의 newTag만 바꿉니다.
           yq -i '
-            .images = (.images // [])
-            | .images = (.images | map(
-                if .name == "'"${{ env.IMAGE }}"'" then .style="NameTag" | .newTag="'${{ env.TAG_SHA }}'"
-                else . end))' kustomization.yaml
+            .images = (.images // []) |
+            if ((.images | map(select(.name == ${{ env.IMAGE }})) | length) > 0) then
+              (.images[] | select(.name == ${{ env.IMAGE }})).newTag = ${{ env.TAG_SHA }}
+            else
+              .images += [{"name": ${{ env.IMAGE }}, "newTag": ${{ env.TAG_SHA }}}]
+            end
+          ' kustomization.yaml
 
       - name: Create PR to infra
         uses: peter-evans/create-pull-request@v6
