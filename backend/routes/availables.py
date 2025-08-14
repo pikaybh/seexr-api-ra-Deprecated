@@ -18,7 +18,7 @@ language_models = Providers(
             name="OpenAI",
             alias="openai",
             models=[
-                LargeLanguageModel(name="gpt-4", type="chat", available=True),
+                LargeLanguageModel(name="gpt-4.1", type="chat", available=True),
                 LargeLanguageModel(name="gpt-4o-mini", type="chat", available=True),
                 LargeLanguageModel(name="text-embedding-ada-002", type="embedding", available=True),
             ]
